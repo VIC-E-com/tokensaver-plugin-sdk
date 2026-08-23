@@ -41,6 +41,7 @@ fn filesystem_probe(encoded_path: &[u8]) {
     };
     let result = match std::fs::File::open(path) {
         Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => b"DENIED".as_slice(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => b"NOT_FOUND".as_slice(),
         Err(_) => b"ERROR".as_slice(),
         Ok(_) => b"READABLE".as_slice(),
     };

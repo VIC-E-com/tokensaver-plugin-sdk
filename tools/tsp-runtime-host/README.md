@@ -41,10 +41,11 @@ the original execution by the TokenSaver product lifecycle boundary.
 
 `cargo test --locked -p tokensaver-plugin-runtime-host` runs portable protocol and identity tests.
 The ignored `native_runtime` test requires the real platform kernel. It executes two retained
-releases of the same plugin and proves one release cannot read a secret from its sibling, in
-addition to checking exact arguments, I/O, reaping, and idempotent deprovisioning. The release
-workflow provisions that environment and runs the ignored proof on Windows, Linux, and both macOS
-architectures.
+releases of the same plugin and proves one release cannot resolve or read a secret from its sibling.
+Only the precise native `not found` or `permission denied` outcomes count as confinement; readable
+or unrelated filesystem errors fail the proof. The test also checks exact arguments, I/O, reaping,
+and idempotent deprovisioning. The release workflow provisions that environment and runs the ignored
+proof on Windows, Linux, and both macOS architectures.
 
 Each native job then runs the opt-in Go product integration, which verifies package installation,
 activation, optimization, disable deprovisioning, removal, and registry cleanup through this host.

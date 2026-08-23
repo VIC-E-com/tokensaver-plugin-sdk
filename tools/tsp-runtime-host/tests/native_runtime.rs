@@ -135,9 +135,9 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
                 .expect("isolation stdout"),
         )
         .expect("isolation stdout base64");
-    assert_eq!(
-        isolation_stdout, b"DENIED",
-        "retained sibling release was not isolated: {isolation_response}"
+    assert!(
+        isolation_stdout == b"DENIED" || isolation_stdout == b"NOT_FOUND",
+        "retained sibling release was not isolated: {isolation_response}; probe output: {isolation_stdout:?}"
     );
 
     let output = invoke(&request);
