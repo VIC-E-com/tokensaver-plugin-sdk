@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+die() {
+  printf '[runtime-host WSL proof] %s\n' "$*" >&2
+  exit 1
+}
+
 if [[ "${1:-}" == "--runner" ]]; then
   : "${PROOF_CGROUP_ROOT:?}" "${PROOF_USER:?}" "${PROOF_HOME:?}" "${PROOF_TARGET:?}"
   : "${PROOF_SANDBOX:?}" "${PROOF_CARGO:?}" "${PROOF_MANIFEST:?}"
@@ -10,6 +15,49 @@ if [[ "${1:-}" == "--runner" ]]; then
     proof_cargo_target=(--target "$PROOF_RUST_TARGET")
   fi
   printf '%s\n' "$$" > "$PROOF_CGROUP_ROOT/runner/cgroup.procs"
+  runuser -u "$PROOF_USER" -- env \
+    HOME="$PROOF_HOME" \
+    PATH="$PROOF_HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin" \
+    CARGO_TARGET_DIR="$PROOF_TARGET" \
+    "$PROOF_CARGO" test --locked \
+      "${proof_cargo_target[@]}" \
+      --manifest-path "$PROOF_MANIFEST" \
+      -p tokensaver-plugin-runtime-host \
+      --test native_runtime --no-run
+
+  proof_host_directory="$PROOF_TARGET/debug"
+  if [[ -n "${PROOF_RUST_TARGET:-}" ]]; then
+    proof_host_directory="$PROOF_TARGET/$PROOF_RUST_TARGET/debug"
+  fi
+  proof_host="$proof_host_directory/tokensaver-plugin-runtime-host"
+  [[ "$proof_host" =~ ^/tmp/tokensaver-plugin-proof-target\.[A-Za-z0-9]+/([A-Za-z0-9_.-]+/)?debug/tokensaver-plugin-runtime-host$ ]] \
+    || die "built Linux runtime host path is outside the private proof target"
+  [[ -x "$proof_host" && ! -L "$proof_host" ]] \
+    || die "built Linux runtime host is unavailable or unsafe"
+
+  proof_apparmor_profile=""
+  cleanup_runner() {
+    local result=$?
+    trap - EXIT HUP INT TERM
+    if [[ -n "$proof_apparmor_profile" ]]; then
+      /usr/sbin/apparmor_parser --remove "$proof_apparmor_profile" >/dev/null 2>&1 || true
+      rm -f -- "$proof_apparmor_profile"
+    fi
+    exit "$result"
+  }
+  trap cleanup_runner EXIT HUP INT TERM
+  if [[ -r /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]] \
+    && [[ "$(< /proc/sys/kernel/apparmor_restrict_unprivileged_userns)" == "1" ]]; then
+    [[ -x /usr/sbin/apparmor_parser ]] \
+      || die "AppArmor parser is required for exact user-namespace delegation"
+    proof_apparmor_profile="$(mktemp /tmp/tokensaver-plugin-proof-apparmor.XXXXXX)"
+    profile_name="tokensaver_plugin_proof_$$"
+    printf 'abi <abi/4.0>,\ninclude <tunables/global>\nprofile %s "%s" flags=(unconfined) {\n  userns,\n}\n' \
+      "$profile_name" "$proof_host" > "$proof_apparmor_profile"
+    /usr/sbin/apparmor_parser --replace "$proof_apparmor_profile"
+    printf '[runtime-host WSL proof] attached exact AppArmor user-namespace policy\n'
+  fi
+
   runuser -u "$PROOF_USER" -- env \
     HOME="$PROOF_HOME" \
     PATH="$PROOF_HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin" \
@@ -33,11 +81,6 @@ if [[ "${1:-}" == "--runner" ]]; then
   fi
   exit 0
 fi
-
-die() {
-  printf '[runtime-host WSL proof] %s\n' "$*" >&2
-  exit 1
-}
 
 [[ "$(id -u)" -eq 0 ]] || die "run as root so the proof can delegate a cgroup v2 subtree"
 [[ $# -eq 1 || $# -eq 2 ]] || die "usage: test-runtime-host-wsl.sh UNIX_USER [LINUX_GO_TEST_BINARY]"

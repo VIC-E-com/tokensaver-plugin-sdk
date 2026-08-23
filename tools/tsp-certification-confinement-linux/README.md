@@ -38,5 +38,8 @@ Its WSL2 command and verified environment are recorded in
 
 The checked-in release workflow creates sibling `runner` and `sandboxes` cgroups, enables `memory`
 and `pids` on the root, common ancestor, and sandbox parent, moves the test runner into `runner`, and
-executes the ignored native suite as the unprivileged build user. Packaging cannot start unless this
-proof succeeds.
+executes the ignored native suite as the unprivileged build user. On Ubuntu systems that enable
+`kernel.apparmor_restrict_unprivileged_userns`, the proof attaches a temporary AppArmor profile with
+only the `userns` permission to the exact hashed runtime-host executable. It never disables the
+system-wide restriction, and it removes the temporary profile on every exit path. Packaging cannot
+start unless this proof succeeds.

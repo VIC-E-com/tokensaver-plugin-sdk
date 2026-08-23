@@ -14,7 +14,7 @@ use tsp_workbench::CertificationFuzzEngine;
 
 const BACKEND_ID: &str = "tokensaver.macos-native";
 const BACKEND_VERSION: &str = "1.0.0";
-const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0sandbox-deny-default\0trusted-launcher\0process-group\0rlimit-address+data+nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
+const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0sandbox-deny-default+apple-system-base\0trusted-launcher\0process-group\0rlimit-data+nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
 const ENV_ALLOWLIST: &[&str] = &[
     "ASAN_OPTIONS",
     "GCOV_PREFIX",
@@ -441,7 +441,7 @@ fn make_sandbox_profile(
     let launcher = sandbox_literal(launcher)?;
     let writable = sandbox_literal(writable)?;
     let profile = format!(
-        "(version 1)\n(deny default)\n(allow process-exec (literal \"{launcher}\") (literal \"{executable}\"))\n(deny process-fork)\n(deny network*)\n(allow file-read-metadata)\n(allow file-read* (literal \"{launcher}\") (literal \"{executable}\") (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/Library/Apple/System\"))\n(allow file-write* (subpath \"{writable}\"))\n(allow sysctl-read)\n(allow mach-lookup (global-name \"com.apple.system.opendirectoryd.libinfo\"))\n"
+        "(version 1)\n(deny default)\n(import \"system.sb\")\n(allow process-exec (literal \"{launcher}\") (literal \"{executable}\"))\n(deny process-fork)\n(deny network*)\n(allow file-read-metadata)\n(allow file-read* (literal \"{launcher}\") (literal \"{executable}\") (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/Library/Apple/System\"))\n(allow file-write* (subpath \"{writable}\"))\n(allow sysctl-read)\n(allow mach-lookup (global-name \"com.apple.system.opendirectoryd.libinfo\"))\n"
     );
     if profile.len() > 65_536 || profile.contains('\0') {
         return Err(MacosConfinementError::new(
@@ -706,6 +706,7 @@ mod tests {
             ("TOKENSAVER_PLUGIN".into(), "1".into()),
         ]));
         assert!(config.sandbox_profile().contains("(deny default)"));
+        assert!(config.sandbox_profile().contains("(import \"system.sb\")"));
         assert!(config.sandbox_profile().contains("(deny network*)"));
         assert!(!config.sandbox_profile().contains("/etc"));
         assert_eq!(config.environment()[0].0, "HOME");
