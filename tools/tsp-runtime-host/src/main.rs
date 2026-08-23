@@ -312,6 +312,9 @@ fn duration(request: &ValidatedRequest) -> Duration {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
 
     #[test]
     fn exact_request_validation_rehashes_package_and_executable() {
@@ -449,12 +452,13 @@ mod tests {
     impl Fixture {
         fn new() -> Self {
             let root = std::env::temp_dir().join(format!(
-                "tokensaver-runtime-host-test-{}-{}",
+                "tokensaver-runtime-host-test-{}-{}-{}",
                 std::process::id(),
                 std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .expect("clock")
-                    .as_nanos()
+                    .as_nanos(),
+                NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed),
             ));
             let release = root.join("release");
             let work = root.join("work");
