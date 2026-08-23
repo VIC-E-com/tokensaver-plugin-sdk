@@ -14,7 +14,7 @@ use tsp_workbench::CertificationFuzzEngine;
 
 const BACKEND_ID: &str = "tokensaver.macos-native";
 const BACKEND_VERSION: &str = "1.0.0";
-const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0apple-system-base+explicit-file-read-reset\0trusted-launcher\0process-group\0proc-rusage-memory-watchdog+rlimit-nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
+const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0apple-system-base+file-read-reset+executable-directory-denial\0trusted-launcher\0process-group\0proc-rusage-memory-watchdog+rlimit-nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
 const ENV_ALLOWLIST: &[&str] = &[
     "ASAN_OPTIONS",
     "GCOV_PREFIX",
@@ -437,11 +437,17 @@ fn make_sandbox_profile(
     launcher: &Path,
     writable: &Path,
 ) -> Result<String, MacosConfinementError> {
+    let executable_parent = sandbox_literal(executable.parent().ok_or_else(|| {
+        MacosConfinementError::new(MacosConfinementErrorKind::InvalidConfiguration)
+    })?)?;
+    let launcher_parent = sandbox_literal(launcher.parent().ok_or_else(|| {
+        MacosConfinementError::new(MacosConfinementErrorKind::InvalidConfiguration)
+    })?)?;
     let executable = sandbox_literal(executable)?;
     let launcher = sandbox_literal(launcher)?;
     let writable = sandbox_literal(writable)?;
     let profile = format!(
-        "(version 1)\n(deny default)\n(import \"system.sb\")\n(allow process-exec (literal \"{launcher}\") (literal \"{executable}\"))\n(deny process-fork)\n(deny network*)\n(deny file-read*)\n(allow file-read-metadata)\n(allow file-read* (literal \"{launcher}\") (literal \"{executable}\") (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/Library/Apple/System\"))\n(allow file-write* (subpath \"{writable}\"))\n(allow sysctl-read)\n(allow mach-lookup (global-name \"com.apple.system.opendirectoryd.libinfo\"))\n"
+        "(version 1)\n(deny default)\n(import \"system.sb\")\n(allow process-exec (literal \"{launcher}\") (literal \"{executable}\"))\n(deny process-fork)\n(deny network*)\n(deny file-read*)\n(deny file-read* (subpath \"{launcher_parent}\") (subpath \"{executable_parent}\"))\n(allow file-read-metadata)\n(allow file-read* (literal \"{launcher}\") (literal \"{executable}\") (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/Library/Apple/System\"))\n(allow file-write* (subpath \"{writable}\"))\n(allow sysctl-read)\n(allow mach-lookup (global-name \"com.apple.system.opendirectoryd.libinfo\"))\n"
     );
     if profile.len() > 65_536 || profile.contains('\0') {
         return Err(MacosConfinementError::new(
@@ -716,12 +722,17 @@ mod tests {
             .sandbox_profile()
             .find("(deny file-read*)")
             .expect("file-read reset");
+        let deny_executable_directories = config
+            .sandbox_profile()
+            .find("(deny file-read* (subpath")
+            .expect("executable-directory file-read denial");
         let allow_pinned_reads = config
             .sandbox_profile()
             .find("(allow file-read*")
             .expect("pinned file-read allowlist");
         assert!(imported_system < reset_file_reads);
-        assert!(reset_file_reads < allow_pinned_reads);
+        assert!(reset_file_reads < deny_executable_directories);
+        assert!(deny_executable_directories < allow_pinned_reads);
         assert!(!config.sandbox_profile().contains("/etc"));
         assert_eq!(config.environment()[0].0, "HOME");
         assert!(

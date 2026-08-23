@@ -31,6 +31,10 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
         env!("CARGO_BIN_EXE_tsp-macos-confinement-launcher"),
         &root.join("launcher"),
     );
+    let forbidden = root.join("host-secret");
+    std::fs::write(&forbidden, b"must remain private").expect("host secret");
+    std::fs::set_permissions(&forbidden, std::fs::Permissions::from_mode(0o600))
+        .expect("host secret mode");
     let config = MacosConfinementConfig::new(
         &executable,
         &launcher,
@@ -60,7 +64,19 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
         (5, b"TS_THREAD".as_slice()),
         (6, b"TS_WORK".as_slice()),
     ] {
-        let observed = execute(&kernel, &config, ordinal, input, 4096, 2_000);
+        let observed = if ordinal == 2 {
+            execute_with_arguments(
+                &kernel,
+                &config,
+                ordinal,
+                input,
+                4096,
+                2_000,
+                &[forbidden.to_string_lossy().into_owned()],
+            )
+        } else {
+            execute(&kernel, &config, ordinal, input, 4096, 2_000)
+        };
         assert_eq!(
             observed.termination,
             NativeTermination::Exited(0),
@@ -78,6 +94,10 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
     assert_eq!(
         std::fs::read(work.join("fixture-evidence")).expect("evidence"),
         b"evidence"
+    );
+    assert_eq!(
+        std::fs::read(&forbidden).expect("host secret after confinement"),
+        b"must remain private"
     );
 
     let arguments = [

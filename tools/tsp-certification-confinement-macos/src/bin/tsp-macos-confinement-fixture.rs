@@ -28,7 +28,11 @@ fn main() {
             std::hint::black_box(bytes);
         }
         b"TS_CRASH" => std::process::abort(),
-        b"TS_FS" => print_result(std::fs::read("/etc/passwd").is_err()),
+        b"TS_FS" => print_result(
+            std::env::args_os()
+                .nth(1)
+                .is_some_and(|path| std::fs::read(path).is_err()),
+        ),
         b"TS_WORK" => print_result(std::fs::write("fixture-evidence", b"evidence").is_ok()),
         b"TS_NETWORK" => {
             print_result(std::net::TcpStream::connect("127.0.0.1:9").is_err());
