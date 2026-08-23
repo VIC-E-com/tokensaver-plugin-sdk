@@ -11,15 +11,24 @@ use std::process::{Command, Stdio};
 #[ignore = "requires native AppContainer or delegated Linux cgroup provisioning"]
 fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_confinement() {
     let plugin_id = format!("com.tokensaver.runtime-integration-{}", std::process::id());
-    let _profile = ProfileCleanup::new(&plugin_id);
+    let primary_release_id = format!("tsr1_{}", "a".repeat(64));
+    let sibling_release_id = format!("tsr1_{}", "b".repeat(64));
+    let _primary_profile = ProfileCleanup::new(&plugin_id, &primary_release_id);
+    let _sibling_profile = ProfileCleanup::new(&plugin_id, &sibling_release_id);
     let root = unique_temp();
-    let release = root.join("release");
-    let work = root.join("work");
-    std::fs::create_dir_all(&release).expect("release");
-    std::fs::create_dir(&work).expect("work");
+    let release = root.join("release-primary");
+    let sibling_release = root.join("release-sibling");
+    let work = root.join("work-primary");
+    let sibling_work = root.join("work-sibling");
+    std::fs::create_dir_all(&release).expect("primary release");
+    std::fs::create_dir(&sibling_release).expect("sibling release");
+    std::fs::create_dir(&work).expect("primary work");
+    std::fs::create_dir(&sibling_work).expect("sibling work");
     make_private(&root);
     make_private(&release);
+    make_private(&sibling_release);
     make_private(&work);
+    make_private(&sibling_work);
     let executable = release.join(if cfg!(windows) {
         "plugin.exe"
     } else {
@@ -33,6 +42,21 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
     make_executable(&executable);
     let package = release.join("package.tsplug");
     std::fs::write(&package, b"exact package identity").expect("package");
+    let sibling_executable = sibling_release.join(if cfg!(windows) {
+        "plugin.exe"
+    } else {
+        "plugin"
+    });
+    std::fs::copy(
+        env!("CARGO_BIN_EXE_tokensaver-runtime-echo-fixture"),
+        &sibling_executable,
+    )
+    .expect("sibling fixture copy");
+    make_executable(&sibling_executable);
+    let sibling_package = sibling_release.join("package.tsplug");
+    std::fs::write(&sibling_package, b"sibling package identity").expect("sibling package");
+    let sibling_secret = sibling_release.join("sibling-secret.txt");
+    std::fs::write(&sibling_secret, b"must remain private").expect("sibling secret");
     let platform = if cfg!(windows) {
         if cfg!(target_arch = "x86_64") {
             "windows-x64"
@@ -59,7 +83,7 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
         "operation": "execute",
         "attemptId": format!("tsa1_{}", "a".repeat(32)),
         "pluginId": plugin_id,
-        "releaseId": format!("tsr1_{}", "b".repeat(64)),
+        "releaseId": primary_release_id,
         "platform": platform,
         "packageDigest": digest(&package),
         "artifactDigest": digest(&executable),
@@ -73,6 +97,49 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
         "maximumStdoutBytes": 4096,
         "maximumStderrBytes": 4096
     });
+
+    let sibling_request = json!({
+        "schemaVersion": 1,
+        "operation": "execute",
+        "attemptId": format!("tsa1_{}", "b".repeat(32)),
+        "pluginId": plugin_id,
+        "releaseId": sibling_release_id,
+        "platform": platform,
+        "packageDigest": digest(&sibling_package),
+        "artifactDigest": digest(&sibling_executable),
+        "executablePath": sibling_executable,
+        "releasePath": sibling_release,
+        "workPath": sibling_work,
+        "arguments": [],
+        "input": base64::engine::general_purpose::STANDARD.encode(b"provision sibling release"),
+        "deadlineMilliseconds": 1_250,
+        "maximumMemoryBytes": 256 << 20,
+        "maximumStdoutBytes": 4096,
+        "maximumStderrBytes": 4096
+    });
+    assert_successful_observation(&invoke(&sibling_request));
+
+    let mut isolation_request = request.clone();
+    isolation_request["attemptId"] = json!(format!("tsa1_{}", "d".repeat(32)));
+    isolation_request["arguments"] = json!([]);
+    isolation_request["input"] = json!(
+        base64::engine::general_purpose::STANDARD
+            .encode(format!("TS_FS|{}", sibling_secret.display()).as_bytes())
+    );
+    let isolation_output = invoke(&isolation_request);
+    let isolation_response = successful_response(&isolation_output);
+    let isolation_stdout = base64::engine::general_purpose::STANDARD
+        .decode(
+            isolation_response["observation"]["stdout"]
+                .as_str()
+                .expect("isolation stdout"),
+        )
+        .expect("isolation stdout base64");
+    assert_eq!(
+        isolation_stdout, b"DENIED",
+        "retained sibling release was not isolated: {isolation_response}"
+    );
+
     let output = invoke(&request);
     assert!(
         output.status.success(),
@@ -96,18 +163,45 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
         .expect("stdout base64");
     assert_eq!(stdout, format!("1\n{}", arguments.join("\n")).as_bytes());
 
-    let mut cleanup_request = request.clone();
-    cleanup_request["operation"] = json!("deprovision");
-    cleanup_request["attemptId"] = json!(format!("tsa1_{}", "c".repeat(32)));
-    for _ in 0..2 {
-        let cleanup = invoke(&cleanup_request);
-        assert!(cleanup.status.success());
-        let cleanup_response: serde_json::Value =
-            serde_json::from_slice(&cleanup.stdout).expect("cleanup response");
-        assert_eq!(cleanup_response["ok"], true, "{cleanup_response}");
-        assert!(cleanup_response.get("observation").is_none());
+    for (index, source) in [request, sibling_request].iter().enumerate() {
+        let mut cleanup_request = source.clone();
+        cleanup_request["operation"] = json!("deprovision");
+        cleanup_request["attemptId"] = json!(format!(
+            "tsa1_{}",
+            if index == 0 { "c" } else { "e" }.repeat(32)
+        ));
+        for _ in 0..2 {
+            let cleanup = invoke(&cleanup_request);
+            assert!(cleanup.status.success());
+            let cleanup_response: serde_json::Value =
+                serde_json::from_slice(&cleanup.stdout).expect("cleanup response");
+            assert_eq!(cleanup_response["ok"], true, "{cleanup_response}");
+            assert!(cleanup_response.get("observation").is_none());
+        }
     }
     std::fs::remove_dir_all(root).expect("cleanup");
+}
+
+fn assert_successful_observation(output: &std::process::Output) {
+    let _ = successful_response(output);
+}
+
+fn successful_response(output: &std::process::Output) -> serde_json::Value {
+    assert!(
+        output.status.success(),
+        "host failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let response: serde_json::Value =
+        serde_json::from_slice(&output.stdout).expect("response JSON");
+    assert_eq!(
+        response["ok"],
+        true,
+        "runtime response: {response}; stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(response["observation"]["processReaped"], true);
+    response
 }
 
 fn invoke(request: &serde_json::Value) -> std::process::Output {
@@ -175,8 +269,14 @@ struct ProfileCleanup {
 
 #[cfg(windows)]
 impl ProfileCleanup {
-    fn new(plugin_id: &str) -> Self {
-        let digest = format!("{:x}", Sha256::digest(plugin_id.as_bytes()));
+    fn new(plugin_id: &str, release_id: &str) -> Self {
+        let mut hasher = Sha256::new();
+        for value in ["tokensaver-windows-appcontainer-v1", plugin_id, release_id] {
+            let bytes = value.as_bytes();
+            hasher.update((bytes.len() as u64).to_be_bytes());
+            hasher.update(bytes);
+        }
+        let digest = format!("{:x}", hasher.finalize());
         Self {
             name: format!("com.tokensaver.plugin.{}", &digest[..32]),
         }
@@ -202,7 +302,7 @@ struct ProfileCleanup;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 impl ProfileCleanup {
-    fn new(_: &str) -> Self {
+    fn new(_: &str, _: &str) -> Self {
         Self
     }
 }

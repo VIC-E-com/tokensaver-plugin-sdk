@@ -30,13 +30,21 @@ For each invocation the host:
 7. returns one bounded observation with host-measured duration, memory, termination, stream-limit,
    and reap evidence.
 
+Windows derives a distinct capability-free AppContainer identity from the protocol domain,
+plugin ID, and immutable release ID using length-prefixed UTF-8 fields. Retained releases of one
+plugin therefore never share an AppContainer SID or accumulated filesystem ACLs. Deprovisioning
+uses that same release-scoped identity.
+
 The Go caller independently pins and rehashes this host before every execution. On macOS it also
 pins and rehashes the separate resource-limit launcher. The host response is revalidated against
 the original execution by the TokenSaver product lifecycle boundary.
 
 `cargo test --locked -p tokensaver-plugin-runtime-host` runs portable protocol and identity tests.
-The ignored `native_runtime` test requires the real platform kernel. The release workflow provisions
-that environment and runs the ignored proof on Windows, Linux, and both macOS architectures.
+The ignored `native_runtime` test requires the real platform kernel. It executes two retained
+releases of the same plugin and proves one release cannot read a secret from its sibling, in
+addition to checking exact arguments, I/O, reaping, and idempotent deprovisioning. The release
+workflow provisions that environment and runs the ignored proof on Windows, Linux, and both macOS
+architectures.
 
 Each native job then runs the opt-in Go product integration, which verifies package installation,
 activation, optimization, disable deprovisioning, removal, and registry cleanup through this host.

@@ -197,7 +197,7 @@ mod selected {
     }
 
     pub fn execute(request: &ValidatedRequest) -> Result<NativeResult, &'static str> {
-        let profile_name = profile_name(&request.request.plugin_id);
+        let profile_name = profile_name(&request.request.plugin_id, &request.request.release_id);
         let sid = ensure_profile(&profile_name).map_err(|_| "confinement_profile")?;
         grant(&request.release, &sid, "(OI)(CI)RX").map_err(|_| "confinement_acl")?;
         grant(&request.work, &sid, "(OI)(CI)M").map_err(|_| "confinement_acl")?;
@@ -254,7 +254,10 @@ mod selected {
 
     pub fn deprovision(request: &ValidatedRequest) -> Result<(), &'static str> {
         use windows_sys::Win32::Security::Isolation::DeleteAppContainerProfile;
-        let name = wide(&profile_name(&request.request.plugin_id));
+        let name = wide(&profile_name(
+            &request.request.plugin_id,
+            &request.request.release_id,
+        ));
         // SAFETY: name is a live NUL-terminated UTF-16 string.
         let result = unsafe { DeleteAppContainerProfile(name.as_ptr()) };
         const HRESULT_FILE_NOT_FOUND: i32 = 0x8007_0002u32 as i32;
@@ -265,8 +268,14 @@ mod selected {
         }
     }
 
-    fn profile_name(plugin_id: &str) -> String {
-        let digest = format!("{:x}", Sha256::digest(plugin_id.as_bytes()));
+    fn profile_name(plugin_id: &str, release_id: &str) -> String {
+        let mut hasher = Sha256::new();
+        for value in ["tokensaver-windows-appcontainer-v1", plugin_id, release_id] {
+            let bytes = value.as_bytes();
+            hasher.update((bytes.len() as u64).to_be_bytes());
+            hasher.update(bytes);
+        }
+        let digest = format!("{:x}", hasher.finalize());
         format!("com.tokensaver.plugin.{}", &digest[..32])
     }
 
@@ -361,6 +370,24 @@ mod selected {
             .encode_wide()
             .chain(std::iter::once(0))
             .collect()
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::profile_name;
+
+        #[test]
+        fn profile_identity_is_release_scoped_and_matches_pinned_vectors() {
+            let plugin_id = "com.tokensaver.isolation-proof";
+            assert_eq!(
+                profile_name(plugin_id, &format!("tsr1_{}", "a".repeat(64))),
+                "com.tokensaver.plugin.268c73af6543e3c500f99941eb6f4314"
+            );
+            assert_eq!(
+                profile_name(plugin_id, &format!("tsr1_{}", "b".repeat(64))),
+                "com.tokensaver.plugin.98a85397edb574768d13f00f6b2f3b95"
+            );
+        }
     }
 }
 

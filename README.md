@@ -334,8 +334,11 @@ the namespace/seccomp/Landlock/cgroup v2 and deny-by-default sandbox/resource-li
 non-published `tools/tsp-runtime-host` composes those kernels into the product runtime boundary. It
 accepts one bounded schema-v1 request, rehashes the exact package and executable, forwards manifest
 arguments exactly, returns host-measured proof, and supports idempotent native deprovisioning. It is
-not part of the public plugin API and has no ordinary-process fallback. The release workflow runs
-the real Linux proof in a delegated cgroup and the ignored native macOS proof
+not part of the public plugin API and has no ordinary-process fallback. Windows AppContainer
+identities bind both the plugin ID and immutable release ID, preventing retained releases of one
+plugin from sharing accumulated filesystem ACLs. The native runtime proof executes two sibling
+releases and verifies the filesystem boundary on Windows, Linux, and macOS. The release workflow
+runs the real Linux proof in a delegated cgroup and the ignored native macOS proof
 on x64 and arm64 runners before packaging. Provisioned Windows CI must still supply the immutable
 AppContainer-readable instrumented executable and private sanitizer/coverage directory for a real
 instrumented campaign.
