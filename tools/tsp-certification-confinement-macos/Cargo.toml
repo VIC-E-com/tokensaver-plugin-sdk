@@ -1,0 +1,17 @@
+[package]
+name = "tokensaver-certification-confinement-macos"
+version = "0.1.0"
+description = "Trusted macOS sandbox and resource-limit certification driver"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+sha2.workspace = true
+tokensaver-certification-confinement = { path = "../tsp-certification-confinement" }
+tokensaver-certification-worker = { path = "../tsp-certification-worker" }
+tsp-workbench = { path = "../tsp" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+libc.workspace = true

@@ -1,0 +1,30 @@
+[package]
+name = "tokensaver-certification-confinement-windows"
+version = "0.1.0"
+description = "Trusted Windows AppContainer and Job Object certification driver"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+sha2.workspace = true
+tokensaver-certification-confinement = { path = "../tsp-certification-confinement" }
+tokensaver-certification-worker = { path = "../tsp-certification-worker" }
+tsp-workbench = { path = "../tsp" }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_NetworkManagement_WindowsFirewall",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Security_Isolation",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Com",
+    "Win32_System_IO",
+    "Win32_System_JobObjects",
+    "Win32_System_Pipes",
+    "Win32_System_SystemServices",
+    "Win32_System_Threading",
+] }

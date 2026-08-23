@@ -1,0 +1,31 @@
+[package]
+name = "tokensaver-plugin-runtime-host"
+version = "0.1.0"
+description = "Trusted native confinement host for the TokenSaver plugin runtime"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+base64.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tokensaver-certification-confinement = { path = "../tsp-certification-confinement" }
+tsp-workbench = { path = "../tsp" }
+
+[target.'cfg(windows)'.dependencies]
+tokensaver-certification-confinement-windows = { path = "../tsp-certification-confinement-windows" }
+windows-sys = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Security_Isolation",
+] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+tokensaver-certification-confinement-linux = { path = "../tsp-certification-confinement-linux" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+tokensaver-certification-confinement-macos = { path = "../tsp-certification-confinement-macos" }

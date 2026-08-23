@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-trust-store.v1.json",
+  "title": "TokenSaver Plugin Certification Trust Store v1",
+  "type": "object",
+  "required": ["schemaVersion", "keys"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": ["issuerId", "keyId", "purpose", "publicKey", "notBeforeUnix", "notAfterUnix"],
+        "properties": {
+          "issuerId": { "$ref": "#/$defs/token" },
+          "keyId": { "$ref": "#/$defs/token" },
+          "purpose": { "enum": ["certification", "revocation"] },
+          "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+          "notBeforeUnix": { "type": "integer", "minimum": 0 },
+          "notAfterUnix": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:/-]+$" }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/tokensaver-superec-plugin-profile.v1.json",
+  "title": "TokenSaver SUPEREC Plugin Profile v1",
+  "description": "Optional TokenSaver metadata carried by a plugin resource in a VIC-E SUPEREC 0.1.0 graph. This extension is inert data and grants no authority or provenance.",
+  "type": "object",
+  "required": ["profileVersion", "manifest", "protocol", "knowledge"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "profileVersion": {
+      "const": 1
+    },
+    "manifest": {
+      "const": "plugin.json"
+    },
+    "protocol": {
+      "const": "TSPP/1"
+    },
+    "knowledge": {
+      "type": "string",
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+/$"
+    }
+  },
+  "additionalProperties": true
+}

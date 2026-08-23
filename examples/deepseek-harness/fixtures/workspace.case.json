@@ -1,0 +1,11 @@
+{
+  "$schema": "https://sdk.tokensaver.app/schemas/fixture-case.v1.json",
+  "schemaVersion": 1,
+  "name": "DeepSeek Harness routine workspace build",
+  "kind": "build",
+  "program": "pnpm",
+  "exitCode": 0,
+  "input": "workspace.input.txt",
+  "expectedAction": "optimize",
+  "expectedOutput": "workspace.golden.txt"
+}

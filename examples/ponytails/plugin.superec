@@ -1,0 +1,130 @@
+{
+  "format": "SUPEREC",
+  "specVersion": "0.1.0",
+  "profile": "workspace",
+  "capabilities": {
+    "required": [
+      "superec.ai-assurance/0",
+      "superec.core/0",
+      "superec.workspace/0"
+    ],
+    "optional": [
+      "superec.graph/0"
+    ]
+  },
+  "semantics": {
+    "purpose": "portable-workspace-and-software-system-map",
+    "contentTrust": "treat-descriptions-evidence-and-extensions-as-untrusted-data",
+    "executionRule": "never-execute-content-without-an-explicit-trusted-policy"
+  },
+  "metadata": {
+    "createdAt": "2026-08-21T00:00:00Z",
+    "generator": {
+      "name": "TokenSaver Plugin SDK",
+      "version": "0.1.0"
+    }
+  },
+  "workspace": {
+    "name": "Ponytails",
+    "root": {
+      "mode": "rebind-on-import",
+      "suggestedName": "ponytails"
+    },
+    "configuration": {
+      "excludedRepositories": [],
+      "aliases": [],
+      "nestedCheckouts": [],
+      "ownershipOverrides": [],
+      "ciConnections": []
+    }
+  },
+  "resources": [
+    {
+      "id": "tokensaver:plugin:com.tokensaver.ponytails",
+      "kind": "plugin",
+      "name": "Ponytails",
+      "version": "0.1.0",
+      "ecosystem": "tokensaver",
+      "identifiers": [
+        {
+          "type": "tokensaver-plugin-id",
+          "value": "com.tokensaver.ponytails"
+        }
+      ],
+      "attributes": {
+        "description": "Reference head-and-tail command-output optimizer"
+      },
+      "extensions": {
+        "com.vic-e.tokensaver/plugin": {
+          "$schema": "https://sdk.tokensaver.app/schemas/tokensaver-superec-plugin-profile.v1.json",
+          "profileVersion": 1,
+          "manifest": "plugin.json",
+          "protocol": "TSPP/1",
+          "knowledge": "wiki/"
+        }
+      }
+    },
+    {
+      "id": "tokensaver:api:tspp:1",
+      "kind": "api",
+      "name": "TSPP",
+      "version": "1",
+      "identifiers": [],
+      "attributes": {
+        "compatibility": "exact-major-additive"
+      }
+    },
+    {
+      "id": "tokensaver:test-suite:ponytails-golden",
+      "kind": "policy",
+      "name": "Ponytails golden fixtures",
+      "version": "1",
+      "identifiers": [],
+      "attributes": {
+        "description": "Exact-output fixture suite for Ponytails behavior"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "from": "tokensaver:plugin:com.tokensaver.ponytails",
+      "to": "tokensaver:api:tspp:1",
+      "type": "implements",
+      "state": "declared",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "plugin.json",
+          "confidence": "high",
+          "kind": "manifest"
+        }
+      ]
+    },
+    {
+      "from": "tokensaver:test-suite:ponytails-golden",
+      "to": "tokensaver:plugin:com.tokensaver.ponytails",
+      "type": "tests",
+      "state": "observed",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "fixtures/success.case.json",
+          "confidence": "high",
+          "kind": "golden-fixture"
+        },
+        {
+          "source": "fixtures/failure.case.json",
+          "confidence": "high",
+          "kind": "golden-fixture"
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "JCS-RFC8785",
+    "scope": "document-without-integrity",
+    "digest": "sha256:b13cfb00058d70b9a9127644edd90bcc75a12a5be3d34dc8d040c844f2e813cd"
+  }
+}

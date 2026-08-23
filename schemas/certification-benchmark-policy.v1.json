@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-benchmark-policy.v1.json",
+  "title": "TokenSaver Plugin Certification Benchmark Policy v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "corpusId",
+    "corpusDigest",
+    "minimumCases",
+    "minimumIterations",
+    "minimumInputBytes",
+    "minimumSavingsBasisPoints",
+    "maximumP95LatencyUs"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "policyId": { "$ref": "#/$defs/token" },
+    "corpusId": { "$ref": "#/$defs/token" },
+    "corpusDigest": { "$ref": "#/$defs/digest" },
+    "minimumCases": { "type": "integer", "minimum": 1, "maximum": 100000 },
+    "minimumIterations": { "type": "integer", "minimum": 1, "maximum": 100 },
+    "minimumInputBytes": { "type": "integer", "minimum": 1 },
+    "minimumSavingsBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "maximumP95LatencyUs": { "type": "integer", "minimum": 1, "maximum": 60000000 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    }
+  }
+}

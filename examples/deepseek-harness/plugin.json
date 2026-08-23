@@ -1,0 +1,32 @@
+{
+  "$schema": "https://sdk.tokensaver.app/schemas/plugin-manifest.v1.json",
+  "apiVersion": 1,
+  "id": "com.tokensaver.deepseek-harness",
+  "name": "DeepSeek Harness Output Optimizer",
+  "version": "0.1.0",
+  "creator": {
+    "name": "VIC-E",
+    "url": "https://vic-e.com"
+  },
+  "description": "Community output optimizer for DeepSeek Harness development commands. Not affiliated with or endorsed by DeepSeek.",
+  "license": "Apache-2.0",
+  "runtime": {
+    "kind": "executable",
+    "entry": {
+      "windows-x64": "bin/windows-x64/tokensaver-deepseek-harness-plugin.exe",
+      "windows-arm64": "bin/windows-arm64/tokensaver-deepseek-harness-plugin.exe",
+      "linux-x64": "bin/linux-x64/tokensaver-deepseek-harness-plugin",
+      "linux-arm64": "bin/linux-arm64/tokensaver-deepseek-harness-plugin",
+      "darwin-x64": "bin/darwin-x64/tokensaver-deepseek-harness-plugin",
+      "darwin-arm64": "bin/darwin-arm64/tokensaver-deepseek-harness-plugin"
+    }
+  },
+  "capabilities": {
+    "kinds": ["test", "build", "lint", "status", "log"],
+    "maxInputBytes": 16777216
+  },
+  "limits": {
+    "timeBudgetMs": 250
+  },
+  "permissions": []
+}

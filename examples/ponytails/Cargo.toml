@@ -1,0 +1,15 @@
+[package]
+name = "ponytails"
+version = "0.1.0"
+description = "TokenSaver smart head-and-tail reference optimizer"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+tokensaver-plugin = { path = "../../sdk/rust/tokensaver-plugin" }
+
+[dev-dependencies]
+serde_json.workspace = true
+tsp-workbench = { path = "../../tools/tsp" }

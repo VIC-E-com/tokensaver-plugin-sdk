@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-envelope.v1.json",
+  "title": "TokenSaver Plugin Certification Envelope v1",
+  "type": "object",
+  "required": ["schemaVersion", "reportDigest", "issuerId", "keyId", "issuedAtUnix", "expiresAtUnix", "algorithm", "signature"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "reportDigest": { "$ref": "#/$defs/digest" },
+    "issuerId": { "$ref": "#/$defs/token" },
+    "keyId": { "$ref": "#/$defs/token" },
+    "issuedAtUnix": { "type": "integer", "minimum": 0 },
+    "expiresAtUnix": { "type": "integer", "minimum": 0 },
+    "algorithm": { "const": "ed25519" },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "token": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:/-]+$" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+  }
+}

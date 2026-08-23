@@ -1,0 +1,10 @@
+/target/
+/dist/
+/release/
+/runtime-host/
+/examples/*/bin/
+sdk/typescript/tokensaver-plugin/node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/

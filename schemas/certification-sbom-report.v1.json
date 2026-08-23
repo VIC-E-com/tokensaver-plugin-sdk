@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tokensaver.app/plugin-sdk/certification-sbom-report.v1.json",
+  "title": "TokenSaver certification SBOM report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "subject",
+    "policyDigest",
+    "sbomDigest",
+    "format",
+    "specVersion",
+    "componentCount",
+    "componentsWithSha256",
+    "componentsWithLicenses",
+    "componentsWithPurls",
+    "generatedAtUnix"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "subject": { "$ref": "#/$defs/subject" },
+    "policyDigest": { "$ref": "#/$defs/digest" },
+    "sbomDigest": { "$ref": "#/$defs/digest" },
+    "format": { "const": "CycloneDX" },
+    "specVersion": { "const": "1.6" },
+    "componentCount": { "$ref": "#/$defs/count" },
+    "componentsWithSha256": { "$ref": "#/$defs/count" },
+    "componentsWithLicenses": { "$ref": "#/$defs/count" },
+    "componentsWithPurls": { "$ref": "#/$defs/count" },
+    "generatedAtUnix": { "type": "integer", "minimum": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 100000 },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pluginId",
+        "version",
+        "platform",
+        "apiVersion",
+        "artifactDigest",
+        "packageDigest",
+        "releaseId"
+      ],
+      "properties": {
+        "pluginId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "platform": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "apiVersion": { "type": "integer", "minimum": 1 },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" },
+        "releaseId": { "type": "string", "pattern": "^tsr1_[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/fixture-case.v1.json",
+  "title": "TokenSaver Plugin Golden Fixture v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "name",
+    "kind",
+    "program",
+    "exitCode",
+    "input",
+    "expectedAction"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "enum": ["test", "build", "lint", "status", "log"]
+    },
+    "program": {
+      "type": "string",
+      "minLength": 1
+    },
+    "exitCode": {
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expectedAction": {
+      "enum": ["pass", "optimize"]
+    },
+    "expectedOutput": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "expectedAction": {
+            "const": "optimize"
+          }
+        }
+      },
+      "then": {
+        "required": ["expectedOutput"]
+      },
+      "else": {
+        "not": {
+          "required": ["expectedOutput"]
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

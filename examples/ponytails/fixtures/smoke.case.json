@@ -1,0 +1,10 @@
+{
+  "$schema": "https://sdk.tokensaver.app/schemas/fixture-case.v1.json",
+  "schemaVersion": 1,
+  "name": "short output passes through",
+  "kind": "test",
+  "program": "cargo",
+  "exitCode": 0,
+  "input": "smoke.input.txt",
+  "expectedAction": "pass"
+}

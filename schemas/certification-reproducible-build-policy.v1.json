@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-reproducible-build-policy.v1.json",
+  "title": "TokenSaver Plugin Certification Reproducible Build Policy v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "requiredIndependentBuilds",
+    "requireDistinctEnvironments",
+    "maximumBuildDurationMilliseconds",
+    "maximumTotalDurationMilliseconds"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "policyId": { "$ref": "#/$defs/token" },
+    "requiredIndependentBuilds": { "const": 2 },
+    "requireDistinctEnvironments": { "const": true },
+    "maximumBuildDurationMilliseconds": { "$ref": "#/$defs/duration" },
+    "maximumTotalDurationMilliseconds": { "$ref": "#/$defs/duration" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "duration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 604800000
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    }
+  }
+}

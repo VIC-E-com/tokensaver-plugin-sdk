@@ -1,0 +1,16 @@
+[package]
+name = "tokensaver-certification-worker"
+version = "0.1.0"
+description = "Trusted TokenSaver certification worker orchestration"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+tsp-workbench = { path = "../tsp" }
+
+[dev-dependencies]
+base64.workspace = true

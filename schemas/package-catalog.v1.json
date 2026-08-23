@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/package-catalog.v1.json",
+  "title": "TokenSaver Plugin Package Catalog v1",
+  "type": "object",
+  "required": ["schemaVersion", "pluginId", "version", "packages"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "pluginId": { "type": "string" },
+    "version": { "type": "string" },
+    "packages": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 32,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["file", "sizeBytes", "digest", "certificationLevel"],
+        "properties": {
+          "file": { "type": "string", "pattern": "^[^/\\\\]+\\.tsplug$" },
+          "sizeBytes": { "type": "integer", "minimum": 1 },
+          "digest": { "$ref": "#/$defs/digest" },
+          "releaseId": { "$ref": "#/$defs/releaseId" },
+          "certificationLevel": { "type": "integer", "enum": [1, 2, 3] }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "releaseId": {
+      "type": "string",
+      "pattern": "^tsr1_[0-9a-f]{64}$"
+    }
+  }
+}

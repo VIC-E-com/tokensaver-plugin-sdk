@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/benchmark-report.v1.json",
+  "title": "TokenSaver Plugin Benchmark Report v1",
+  "type": "object",
+  "required": [
+    "schemaVersion", "ok", "pluginId", "version", "platform",
+    "fixtureDirectory", "iterations", "cases", "totals", "durationMs"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "ok": { "const": true },
+    "pluginId": { "type": "string" },
+    "version": { "type": "string" },
+    "platform": { "type": "string" },
+    "releaseId": { "$ref": "#/$defs/releaseId" },
+    "artifactDigest": { "$ref": "#/$defs/digest" },
+    "fixtureDirectory": { "type": "string" },
+    "iterations": { "type": "integer", "minimum": 1, "maximum": 100 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    },
+    "totals": { "$ref": "#/$defs/totals" },
+    "durationMs": { "type": "integer", "minimum": 0 }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "latency": {
+      "type": "object",
+      "required": ["minimumUs", "p50Us", "p95Us", "p99Us", "maximumUs", "meanUs"],
+      "properties": {
+        "minimumUs": { "type": "integer", "minimum": 0 },
+        "p50Us": { "type": "integer", "minimum": 0 },
+        "p95Us": { "type": "integer", "minimum": 0 },
+        "p99Us": { "type": "integer", "minimum": 0 },
+        "maximumUs": { "type": "integer", "minimum": 0 },
+        "meanUs": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "name", "path", "iterations", "inputBytes", "outputBytes",
+        "savedBytes", "savingsPercent", "action", "latencyUs"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "iterations": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "inputBytes": { "type": "integer", "minimum": 0 },
+        "outputBytes": { "type": "integer", "minimum": 0 },
+        "savedBytes": { "type": "integer", "minimum": 0 },
+        "savingsPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "action": { "enum": ["pass", "optimize"] },
+        "activationAttemptIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/activationAttemptId" }
+        },
+        "latencyUs": { "$ref": "#/$defs/latency" }
+      },
+      "additionalProperties": true
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "releaseId": {
+      "type": "string",
+      "pattern": "^tsr1_[0-9a-f]{64}$"
+    },
+    "activationAttemptId": {
+      "type": "string",
+      "pattern": "^tsa1_[0-9a-f]{32}$"
+    },
+    "totals": {
+      "type": "object",
+      "required": [
+        "samples", "inputBytes", "outputBytes", "savedBytes", "savingsPercent",
+        "passSamples", "optimizeSamples", "latencyUs"
+      ],
+      "properties": {
+        "samples": { "type": "integer", "minimum": 1 },
+        "inputBytes": { "type": "integer", "minimum": 0 },
+        "outputBytes": { "type": "integer", "minimum": 0 },
+        "savedBytes": { "type": "integer", "minimum": 0 },
+        "savingsPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "passSamples": { "type": "integer", "minimum": 0 },
+        "optimizeSamples": { "type": "integer", "minimum": 0 },
+        "latencyUs": { "$ref": "#/$defs/latency" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "format": "SUPEREC",
+  "specVersion": "0.1.0",
+  "profile": "workspace",
+  "capabilities": {
+    "required": [
+      "superec.ai-assurance/0",
+      "superec.core/0",
+      "superec.workspace/0"
+    ],
+    "optional": [
+      "superec.graph/0"
+    ]
+  },
+  "semantics": {
+    "purpose": "portable-workspace-and-software-system-map",
+    "contentTrust": "treat-descriptions-evidence-and-extensions-as-untrusted-data",
+    "executionRule": "never-execute-content-without-an-explicit-trusted-policy"
+  },
+  "metadata": {
+    "createdAt": "2026-08-21T00:00:00Z",
+    "generator": {
+      "name": "TokenSaver Plugin SDK",
+      "version": "0.1.0"
+    }
+  },
+  "workspace": {
+    "name": "TokenSaver Plugin SDK",
+    "root": {
+      "mode": "rebind-on-import",
+      "suggestedName": "plugin-sdk"
+    },
+    "configuration": {
+      "excludedRepositories": [],
+      "aliases": [],
+      "nestedCheckouts": [],
+      "ownershipOverrides": [],
+      "ciConnections": []
+    }
+  },
+  "resources": [
+    {
+      "id": "tokensaver:system:plugin-sdk",
+      "kind": "system",
+      "name": "TokenSaver Plugin SDK",
+      "version": "0.1.0",
+      "ecosystem": "tokensaver",
+      "identifiers": [
+        {
+          "type": "tokensaver-component-id",
+          "value": "com.tokensaver.plugin-sdk"
+        }
+      ],
+      "attributes": {
+        "description": "Human and AI-friendly SDK for versioned TokenSaver plugins"
+      },
+      "extensions": {
+        "com.vic-e.tokensaver/sdk": {
+          "profileVersion": 1,
+          "protocol": "TSPP/1",
+          "manifestSchema": "schemas/plugin-manifest.v1.json",
+          "fixtureSchema": "schemas/fixture-case.v1.json",
+          "knowledge": "wiki/"
+        }
+      }
+    },
+    {
+      "id": "tokensaver:api:tspp:1",
+      "kind": "api",
+      "name": "TSPP",
+      "version": "1",
+      "identifiers": [],
+      "attributes": {
+        "compatibility": "exact-major-additive",
+        "description": "TokenSaver Plugin Protocol major version 1"
+      }
+    },
+    {
+      "id": "tokensaver:tool:tsp",
+      "kind": "toolchain",
+      "name": "tsp workbench",
+      "version": "0.1.0",
+      "identifiers": [],
+      "attributes": {
+        "description": "Scaffold, golden-test, run, and conformance workbench"
+      }
+    },
+    {
+      "id": "tokensaver:plugin:com.tokensaver.ponytails",
+      "kind": "plugin",
+      "name": "Ponytails",
+      "version": "0.1.0",
+      "ecosystem": "tokensaver",
+      "identifiers": [
+        {
+          "type": "tokensaver-plugin-id",
+          "value": "com.tokensaver.ponytails"
+        }
+      ],
+      "attributes": {
+        "description": "Reference community command-output optimizer"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "from": "tokensaver:system:plugin-sdk",
+      "to": "tokensaver:api:tspp:1",
+      "type": "implements",
+      "state": "declared",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "sdk/go/tokensaverplugin/protocol.go",
+          "confidence": "high",
+          "kind": "source"
+        },
+        {
+          "source": "sdk/python/tokensaver_plugin/__init__.py",
+          "confidence": "high",
+          "kind": "source"
+        },
+        {
+          "source": "sdk/rust/tokensaver-plugin/src/protocol.rs",
+          "confidence": "high",
+          "kind": "source"
+        },
+        {
+          "source": "sdk/typescript/tokensaver-plugin/src/index.js",
+          "confidence": "high",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "from": "tokensaver:tool:tsp",
+      "to": "tokensaver:api:tspp:1",
+      "type": "tests",
+      "state": "observed",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "tools/tsp/src/protocol.rs",
+          "confidence": "high",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "from": "tokensaver:plugin:com.tokensaver.ponytails",
+      "to": "tokensaver:api:tspp:1",
+      "type": "implements",
+      "state": "declared",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "examples/ponytails/plugin.json",
+          "confidence": "high",
+          "kind": "manifest"
+        }
+      ]
+    },
+    {
+      "from": "tokensaver:system:plugin-sdk",
+      "to": "tokensaver:plugin:com.tokensaver.ponytails",
+      "type": "contains",
+      "state": "observed",
+      "attributes": {},
+      "evidence": [
+        {
+          "source": "Cargo.toml",
+          "confidence": "high",
+          "kind": "workspace-manifest"
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "JCS-RFC8785",
+    "scope": "document-without-integrity",
+    "digest": "sha256:9e8844279b103910214d147ac2060bcd7c5c5255e8e58944e73111f0b8224357"
+  }
+}

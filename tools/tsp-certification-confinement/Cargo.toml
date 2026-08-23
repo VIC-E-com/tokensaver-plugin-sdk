@@ -1,0 +1,13 @@
+[package]
+name = "tokensaver-certification-confinement"
+version = "0.1.0"
+description = "Trusted native confinement adapter for TokenSaver certification workers"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+sha2.workspace = true
+tokensaver-certification-worker = { path = "../tsp-certification-worker" }
+tsp-workbench = { path = "../tsp" }

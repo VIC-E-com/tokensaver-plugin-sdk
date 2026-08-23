@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/package-report.v1.json",
+  "title": "TokenSaver Plugin Package Report v1",
+  "type": "object",
+  "required": [
+    "schemaVersion", "ok", "pluginId", "version", "platform",
+    "certificationLevel", "archive", "archiveSizeBytes", "archiveDigest",
+    "executableDigest", "reproducible", "files"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "ok": { "const": true },
+    "pluginId": { "type": "string" },
+    "version": { "type": "string" },
+    "platform": { "type": "string" },
+    "releaseId": { "$ref": "#/$defs/releaseId" },
+    "certificationLevel": { "const": 1 },
+    "archive": { "type": "string" },
+    "archiveSizeBytes": { "type": "integer", "minimum": 1 },
+    "archiveDigest": { "$ref": "#/$defs/digest" },
+    "executableDigest": { "$ref": "#/$defs/digest" },
+    "reproducible": { "const": true },
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["path", "sizeBytes", "digest", "executable"],
+        "properties": {
+          "path": { "type": "string" },
+          "sizeBytes": { "type": "integer", "minimum": 0 },
+          "digest": { "$ref": "#/$defs/digest" },
+          "executable": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "releaseId": {
+      "type": "string",
+      "pattern": "^tsr1_[0-9a-f]{64}$"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-revocations.v1.json",
+  "title": "TokenSaver Plugin Certification Revocations v1",
+  "type": "object",
+  "required": ["schemaVersion", "issuerId", "keyId", "sequence", "issuedAtUnix", "nextUpdateUnix", "algorithm", "revoked", "signature"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "issuerId": { "$ref": "#/$defs/token" },
+    "keyId": { "$ref": "#/$defs/token" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "issuedAtUnix": { "type": "integer", "minimum": 0 },
+    "nextUpdateUnix": { "type": "integer", "minimum": 0 },
+    "algorithm": { "const": "ed25519" },
+    "revoked": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {
+        "type": "object",
+        "required": ["revocationId", "revokedAtUnix", "reason"],
+        "properties": {
+          "revocationId": { "$ref": "#/$defs/token" },
+          "revokedAtUnix": { "type": "integer", "minimum": 0 },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:/-]+$" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+  }
+}

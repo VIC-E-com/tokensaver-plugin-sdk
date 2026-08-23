@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "tokensaver-artifact-signature-message-v1",
+  "cases": [
+    {
+      "name": "linux-x64-release",
+      "artifactSignature": {
+        "schemaVersion": 1,
+        "artifact": {
+          "pluginId": "com.example.plugin",
+          "version": "1.2.3",
+          "platform": "linux-x64",
+          "apiVersion": 1,
+          "artifactDigest": "sha256:310ae097733c9e17c79b560d59f7aa34fb52d1e497ec72c3a14b69f86aa133ff",
+          "releaseId": "tsr1_59aa4d3944288e1fdf2d382caa9c0aadfa098670162567c0ec61dc2c6c83d4cb"
+        },
+        "signerId": "com.example.publisher",
+        "keyId": "release-2026",
+        "issuedAtUnix": 1999999900,
+        "expiresAtUnix": 2000003600,
+        "algorithm": "ed25519",
+        "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+      },
+      "expectedMessageLength": 355,
+      "expectedMessageSha256": "sha256:ff322332f963e01ef10c99f3f90ebead94c9537be9f1ec74de94d8113d3d24c8"
+    }
+  ]
+}

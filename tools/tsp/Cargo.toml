@@ -1,0 +1,22 @@
+[package]
+name = "tsp-workbench"
+version = "0.1.0"
+description = "TokenSaver Plugin SDK workbench and conformance validator"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+default-run = "tsp"
+
+[[bin]]
+name = "tsp"
+path = "src/main.rs"
+
+[dependencies]
+base64.workspace = true
+ed25519-dalek.workspace = true
+fs2.workspace = true
+getrandom.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true

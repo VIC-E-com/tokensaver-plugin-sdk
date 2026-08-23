@@ -1,0 +1,12 @@
+[package]
+name = "tokensaver-plugin"
+version = "0.1.0"
+description = "Rust SDK for the TokenSaver Plugin Protocol"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+base64.workspace = true
+serde.workspace = true
+serde_json.workspace = true

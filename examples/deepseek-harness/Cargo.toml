@@ -1,0 +1,15 @@
+[package]
+name = "tokensaver-deepseek-harness-plugin"
+version = "0.1.0"
+description = "TokenSaver community optimizer for DeepSeek Harness workspace output"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+tokensaver-plugin = { path = "../../sdk/rust/tokensaver-plugin" }
+
+[dev-dependencies]
+serde_json.workspace = true
+tsp-workbench = { path = "../../tools/tsp" }

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tokensaver.app/plugin-sdk/certification-license-provenance-report.v1.json",
+  "title": "TokenSaver certification license provenance report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "subject",
+    "sbomDigest",
+    "policyDigest",
+    "componentCount",
+    "licensedComponents",
+    "provenanceComponents",
+    "deniedComponents",
+    "unknownLicenseComponents",
+    "missingLicenseComponents",
+    "missingProvenanceComponents",
+    "observedSpdxIds",
+    "reviewedAtUnix"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "subject": { "$ref": "#/$defs/subject" },
+    "sbomDigest": { "$ref": "#/$defs/digest" },
+    "policyDigest": { "$ref": "#/$defs/digest" },
+    "componentCount": { "$ref": "#/$defs/count" },
+    "licensedComponents": { "$ref": "#/$defs/count" },
+    "provenanceComponents": { "$ref": "#/$defs/count" },
+    "deniedComponents": { "$ref": "#/$defs/count" },
+    "unknownLicenseComponents": { "$ref": "#/$defs/count" },
+    "missingLicenseComponents": { "$ref": "#/$defs/count" },
+    "missingProvenanceComponents": { "$ref": "#/$defs/count" },
+    "observedSpdxIds": {
+      "type": "array",
+      "maxItems": 512,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/spdxId" }
+    },
+    "reviewedAtUnix": { "type": "integer", "minimum": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 100000 },
+    "spdxId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9.+_-]+$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pluginId",
+        "version",
+        "platform",
+        "apiVersion",
+        "artifactDigest",
+        "packageDigest",
+        "releaseId"
+      ],
+      "properties": {
+        "pluginId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "platform": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "apiVersion": { "type": "integer", "minimum": 1 },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" },
+        "releaseId": { "type": "string", "pattern": "^tsr1_[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

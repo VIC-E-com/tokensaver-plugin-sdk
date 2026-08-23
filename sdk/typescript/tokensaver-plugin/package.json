@@ -1,0 +1,30 @@
+{
+  "name": "@tokensaver/plugin-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript-consumable SDK for TokenSaver Plugin Protocol v1",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src/index.js",
+    "src/index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node --check src/index.js && tsc -p tsconfig.json",
+    "test": "node test/index.test.js"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

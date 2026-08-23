@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tokensaver-plugin"
+version = "0.1.0"
+description = "Python SDK for TokenSaver Plugin Protocol v1"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = []
+
+[tool.unittest]
+start-directory = "tests"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tokensaver_plugin"]

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/runtime-host-response.v1.json",
+  "title": "TokenSaver trusted runtime host response v1",
+  "oneOf": [
+    { "$ref": "#/$defs/executionSuccess" },
+    { "$ref": "#/$defs/deprovisionSuccess" },
+    { "$ref": "#/$defs/failure" }
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "ok"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "ok": { "type": "boolean" },
+        "error": { "type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 64 },
+        "observation": { "$ref": "#/$defs/observation" }
+      }
+    },
+    "executionSuccess": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": ["observation"],
+          "properties": { "ok": { "const": true } }
+        }
+      ]
+    },
+    "deprovisionSuccess": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "properties": { "ok": { "const": true } },
+        "not": {
+          "anyOf": [
+            { "required": ["error"] },
+            { "required": ["observation"] }
+          ]
+        }
+        }
+      ]
+    },
+    "failure": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": ["error"],
+          "properties": { "ok": { "const": false } },
+          "not": { "required": ["observation"] }
+        }
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "attemptId",
+        "artifactDigest",
+        "backendId",
+        "policyDigest",
+        "stdout",
+        "stderr",
+        "exitCode",
+        "durationMilliseconds",
+        "peakMemoryBytes",
+        "processReaped",
+        "deadlineExceeded",
+        "memoryLimitExceeded",
+        "stdoutLimitExceeded",
+        "stderrLimitExceeded"
+      ],
+      "properties": {
+        "platform": { "type": "string" },
+        "attemptId": { "type": "string", "pattern": "^tsa1_[0-9a-f]{32}$" },
+        "artifactDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "backendId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "policyDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "stdout": { "type": "string", "contentEncoding": "base64" },
+        "stderr": { "type": "string", "contentEncoding": "base64" },
+        "exitCode": { "type": "integer" },
+        "durationMilliseconds": { "type": "integer", "minimum": 0, "maximum": 1250 },
+        "peakMemoryBytes": { "type": "integer", "minimum": 0, "maximum": 268435456 },
+        "processReaped": { "type": "boolean" },
+        "deadlineExceeded": { "type": "boolean" },
+        "memoryLimitExceeded": { "type": "boolean" },
+        "stdoutLimitExceeded": { "type": "boolean" },
+        "stderrLimitExceeded": { "type": "boolean" }
+      }
+    }
+  }
+}

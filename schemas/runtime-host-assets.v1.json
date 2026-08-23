@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/runtime-host-assets.v1.json",
+  "title": "TokenSaver packaged native runtime-host assets v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "platform", "host"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "platform": {
+      "enum": [
+        "windows-x64",
+        "windows-arm64",
+        "linux-x64",
+        "linux-arm64",
+        "darwin-x64",
+        "darwin-arm64"
+      ]
+    },
+    "host": { "$ref": "#/$defs/asset" },
+    "limitLauncher": { "$ref": "#/$defs/asset" }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "platform": { "pattern": "^darwin-" }
+        }
+      },
+      "then": {
+        "required": ["limitLauncher"],
+        "properties": {
+          "limitLauncher": {
+            "properties": {
+              "file": { "const": "tokensaver-plugin-limit-launcher" }
+            }
+          }
+        }
+      },
+      "else": { "not": { "required": ["limitLauncher"] } }
+    },
+    {
+      "if": {
+        "properties": {
+          "platform": { "pattern": "^windows-" }
+        }
+      },
+      "then": {
+        "properties": {
+          "host": {
+            "properties": {
+              "file": { "const": "tokensaver-plugin-runtime-host.exe" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "host": {
+            "properties": {
+              "file": { "const": "tokensaver-plugin-runtime-host" }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

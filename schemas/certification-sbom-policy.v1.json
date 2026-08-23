@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tokensaver.app/plugin-sdk/certification-sbom-policy.v1.json",
+  "title": "TokenSaver certification SBOM policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "format",
+    "specVersion",
+    "maximumComponents",
+    "requireComponentHashes",
+    "requireComponentLicenses",
+    "requireComponentPurls"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "policyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    },
+    "format": { "const": "CycloneDX" },
+    "specVersion": { "const": "1.6" },
+    "maximumComponents": { "type": "integer", "minimum": 1, "maximum": 100000 },
+    "requireComponentHashes": { "const": true },
+    "requireComponentLicenses": { "const": true },
+    "requireComponentPurls": { "const": true }
+  }
+}

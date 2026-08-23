@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-artifact-signature.v1.json",
+  "title": "TokenSaver Plugin Certification Artifact Signature v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "artifact",
+    "signerId",
+    "keyId",
+    "issuedAtUnix",
+    "expiresAtUnix",
+    "algorithm",
+    "signature"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "artifact": { "$ref": "#/$defs/artifact" },
+    "signerId": { "$ref": "#/$defs/token" },
+    "keyId": { "$ref": "#/$defs/token" },
+    "issuedAtUnix": { "type": "integer", "minimum": 1 },
+    "expiresAtUnix": { "type": "integer", "minimum": 1 },
+    "algorithm": { "const": "ed25519" },
+    "signature": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{86}==$"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "pluginId",
+        "version",
+        "platform",
+        "apiVersion",
+        "artifactDigest",
+        "releaseId"
+      ],
+      "properties": {
+        "pluginId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "platform": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "apiVersion": { "const": 1 },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "releaseId": {
+          "type": "string",
+          "pattern": "^tsr1_[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    }
+  }
+}

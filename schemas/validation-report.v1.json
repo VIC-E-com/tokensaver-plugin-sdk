@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/validation-report.v1.json",
+  "title": "TokenSaver Plugin Validation Report v1",
+  "type": "object",
+  "required": [
+    "schemaVersion", "ok", "certificationLevel", "pluginId", "version", "platform",
+    "releaseId", "artifactDigest", "manifestPath", "executable", "checks", "durationMs"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "ok": { "const": true },
+    "certificationLevel": { "const": 1 },
+    "pluginId": { "type": "string" },
+    "version": { "type": "string" },
+    "platform": { "type": "string" },
+    "releaseId": { "$ref": "#/$defs/releaseId" },
+    "artifactDigest": { "$ref": "#/$defs/digest" },
+    "manifestPath": { "type": "string" },
+    "executable": { "type": "string" },
+    "checks": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["name", "detail", "durationMs"],
+        "properties": {
+          "name": { "type": "string" },
+          "detail": { "type": "string" },
+          "activationAttemptId": { "$ref": "#/$defs/activationAttemptId" },
+          "durationMs": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "durationMs": { "type": "integer", "minimum": 0 }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "releaseId": { "type": "string", "pattern": "^tsr1_[0-9a-f]{64}$" },
+    "activationAttemptId": { "type": "string", "pattern": "^tsa1_[0-9a-f]{32}$" }
+  }
+}

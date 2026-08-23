@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-reproducible-build-report.v1.json",
+  "title": "TokenSaver Plugin Certification Reproducible Build Report v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "subject",
+    "sourceDigest",
+    "policyDigest",
+    "startedAtUnix",
+    "completedAtUnix",
+    "durationMilliseconds",
+    "builds"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "subject": { "$ref": "#/$defs/subject" },
+    "sourceDigest": { "$ref": "#/$defs/digest" },
+    "policyDigest": { "$ref": "#/$defs/digest" },
+    "startedAtUnix": { "type": "integer", "minimum": 1 },
+    "completedAtUnix": { "type": "integer", "minimum": 1 },
+    "durationMilliseconds": { "$ref": "#/$defs/duration" },
+    "builds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/build" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "build": {
+      "type": "object",
+      "required": [
+        "slot",
+        "attemptId",
+        "builderId",
+        "builderVersion",
+        "environmentDigest",
+        "packageDigest",
+        "exitCode",
+        "networkAccesses",
+        "undeclaredInputs",
+        "durationMilliseconds"
+      ],
+      "properties": {
+        "slot": { "enum": ["a", "b"] },
+        "attemptId": { "$ref": "#/$defs/token" },
+        "builderId": { "$ref": "#/$defs/token" },
+        "builderVersion": { "$ref": "#/$defs/token" },
+        "environmentDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" },
+        "exitCode": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        "networkAccesses": { "$ref": "#/$defs/counter" },
+        "undeclaredInputs": { "$ref": "#/$defs/counter" },
+        "durationMilliseconds": { "$ref": "#/$defs/duration" }
+      },
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "pluginId",
+        "version",
+        "platform",
+        "apiVersion",
+        "artifactDigest",
+        "packageDigest",
+        "releaseId"
+      ],
+      "properties": {
+        "pluginId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "platform": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "apiVersion": { "const": 1 },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "packageDigest": { "$ref": "#/$defs/digest" },
+        "releaseId": {
+          "type": "string",
+          "pattern": "^tsr1_[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "counter": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "duration": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 604800000
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    }
+  }
+}

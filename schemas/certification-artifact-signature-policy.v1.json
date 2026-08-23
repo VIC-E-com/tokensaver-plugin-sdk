@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/certification-artifact-signature-policy.v1.json",
+  "title": "TokenSaver Plugin Certification Artifact Signature Policy v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "algorithm",
+    "maximumSignatureLifetimeSeconds",
+    "minimumRemainingValiditySeconds"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "policyId": { "$ref": "#/$defs/token" },
+    "algorithm": { "const": "ed25519" },
+    "maximumSignatureLifetimeSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 31622400
+    },
+    "minimumRemainingValiditySeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 31622400
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:/-]+$"
+    }
+  }
+}

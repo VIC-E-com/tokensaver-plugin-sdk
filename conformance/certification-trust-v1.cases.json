@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "tokensaver-certification-signing-message-v1",
+  "envelope": {
+    "document": {
+      "schemaVersion": 1,
+      "reportDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "issuerId": "com.tokensaver.registry",
+      "keyId": "certification-2026-01",
+      "issuedAtUnix": 2000000000,
+      "expiresAtUnix": 2000086400,
+      "algorithm": "ed25519",
+      "signature": ""
+    },
+    "messageLength": 222,
+    "messageSha256": "sha256:c30b6a2e860472647f47f4f474ec0512b3be3c65113ff8e7f81bb988c6122b44"
+  },
+  "revocations": {
+    "document": {
+      "schemaVersion": 1,
+      "issuerId": "com.tokensaver.registry",
+      "keyId": "revocation-2026-01",
+      "sequence": 42,
+      "issuedAtUnix": 2000000000,
+      "nextUpdateUnix": 2000003600,
+      "algorithm": "ed25519",
+      "revoked": [
+        {
+          "revocationId": "cert:a",
+          "revokedAtUnix": 1999999900,
+          "reason": "superseded"
+        },
+        {
+          "revocationId": "cert:z",
+          "revokedAtUnix": 1999999950,
+          "reason": "artifact withdrawn"
+        }
+      ],
+      "signature": ""
+    },
+    "messageLength": 247,
+    "messageSha256": "sha256:03e421e34735443c8034036a450d26cc4021fd4fe1ed0fa3b90529194b2cfbb5"
+  }
+}
