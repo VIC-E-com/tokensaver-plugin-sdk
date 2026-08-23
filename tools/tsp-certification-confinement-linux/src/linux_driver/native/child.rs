@@ -11,6 +11,16 @@ use std::ptr::{null, null_mut};
 const CLONE_INTO_CGROUP: u64 = 0x0000_0002_0000_0000;
 const CLOSE_RANGE_UNSHARE: libc::c_uint = 1 << 1;
 const CHILD_SETUP_EXIT: libc::c_int = 127;
+const STAGE_MOUNT_PRIVATE: u8 = 20;
+const STAGE_MOUNT_TMPFS: u8 = 21;
+const STAGE_CREATE_LAYOUT: u8 = 22;
+const STAGE_CREATE_PLUGIN: u8 = 23;
+const STAGE_BIND_EXECUTABLE: u8 = 24;
+const STAGE_BIND_WORK: u8 = 25;
+const STAGE_BIND_LIBRARY: u8 = 26;
+const STAGE_MOUNT_PROC: u8 = 27;
+const STAGE_CHROOT: u8 = 28;
+const STAGE_CHDIR: u8 = 29;
 
 #[repr(C)]
 #[derive(Default)]
@@ -264,8 +274,8 @@ impl PreparedChild {
         if configure_user_identity().is_err() {
             child_fail(self.status_write, 13);
         }
-        if configure_mounts(self).is_err() {
-            child_fail(self.status_write, 14);
+        if let Err(stage) = configure_mounts(self) {
+            child_fail(self.status_write, stage);
         }
         if landlock::apply().is_err() {
             child_fail(self.status_write, 15);
@@ -286,7 +296,7 @@ impl PreparedChild {
     }
 }
 
-fn configure_mounts(plan: &PreparedChild) -> Result<(), ()> {
+fn configure_mounts(plan: &PreparedChild) -> Result<(), u8> {
     if unsafe {
         libc::mount(
             null(),
@@ -296,17 +306,20 @@ fn configure_mounts(plan: &PreparedChild) -> Result<(), ()> {
             null(),
         )
     } != 0
-        || unsafe {
-            libc::mount(
-                c"tmpfs".as_ptr(),
-                plan.root.as_ptr(),
-                c"tmpfs".as_ptr(),
-                libc::MS_NOSUID | libc::MS_NODEV,
-                c"mode=0755,size=67108864".as_ptr().cast(),
-            )
-        } != 0
     {
-        return Err(());
+        return Err(STAGE_MOUNT_PRIVATE);
+    }
+    if unsafe {
+        libc::mount(
+            c"tmpfs".as_ptr(),
+            plan.root.as_ptr(),
+            c"tmpfs".as_ptr(),
+            libc::MS_NOSUID | libc::MS_NODEV,
+            c"mode=0755,size=67108864".as_ptr().cast(),
+        )
+    } != 0
+    {
+        return Err(STAGE_MOUNT_TMPFS);
     }
     for target in [
         &plan.root_plugin_directory,
@@ -317,11 +330,11 @@ fn configure_mounts(plan: &PreparedChild) -> Result<(), ()> {
         &plan.root_usr,
     ] {
         if unsafe { libc::mkdir(target.as_ptr(), 0o755) } != 0 {
-            return Err(());
+            return Err(STAGE_CREATE_LAYOUT);
         }
     }
     if unsafe { libc::mkdir(plan.root_usr_lib.as_ptr(), 0o755) } != 0 {
-        return Err(());
+        return Err(STAGE_CREATE_LAYOUT);
     }
     let file = unsafe {
         libc::open(
@@ -331,13 +344,15 @@ fn configure_mounts(plan: &PreparedChild) -> Result<(), ()> {
         )
     };
     if file < 0 {
-        return Err(());
+        return Err(STAGE_CREATE_PLUGIN);
     }
     unsafe { libc::close(file) };
-    bind_mount(&plan.executable_source, &plan.root_plugin, true, false)?;
-    bind_mount(&plan.writable_source, &plan.root_work, false, false)?;
+    bind_mount(&plan.executable_source, &plan.root_plugin, true, false)
+        .map_err(|()| STAGE_BIND_EXECUTABLE)?;
+    bind_mount(&plan.writable_source, &plan.root_work, false, false)
+        .map_err(|()| STAGE_BIND_WORK)?;
     for (source, target) in &plan.library_mounts {
-        bind_mount(source, target, true, false)?;
+        bind_mount(source, target, true, false).map_err(|()| STAGE_BIND_LIBRARY)?;
     }
     if unsafe {
         libc::mount(
@@ -348,12 +363,39 @@ fn configure_mounts(plan: &PreparedChild) -> Result<(), ()> {
             null(),
         )
     } != 0
-        || unsafe { libc::chroot(plan.root.as_ptr()) } != 0
-        || unsafe { libc::chdir(c"/work".as_ptr()) } != 0
     {
-        return Err(());
+        return Err(STAGE_MOUNT_PROC);
+    }
+    if unsafe { libc::chroot(plan.root.as_ptr()) } != 0 {
+        return Err(STAGE_CHROOT);
+    }
+    if unsafe { libc::chdir(c"/work".as_ptr()) } != 0 {
+        return Err(STAGE_CHDIR);
     }
     Ok(())
+}
+
+pub(super) fn setup_stage(code: u8) -> &'static str {
+    match code {
+        10 => "child_sync_read",
+        11 => "child_stdio",
+        12 => "child_descriptor_close",
+        13 => "child_identity",
+        STAGE_MOUNT_PRIVATE => "mount_private",
+        STAGE_MOUNT_TMPFS => "mount_tmpfs",
+        STAGE_CREATE_LAYOUT => "mount_layout",
+        STAGE_CREATE_PLUGIN => "mount_plugin_file",
+        STAGE_BIND_EXECUTABLE => "mount_bind_executable",
+        STAGE_BIND_WORK => "mount_bind_work",
+        STAGE_BIND_LIBRARY => "mount_bind_library",
+        STAGE_MOUNT_PROC => "mount_proc",
+        STAGE_CHROOT => "mount_chroot",
+        STAGE_CHDIR => "mount_chdir",
+        15 => "landlock",
+        16 => "seccomp",
+        17 => "execve",
+        _ => "child_setup_unknown",
+    }
 }
 
 fn bind_mount(source: &CStr, target: &CStr, readonly: bool, noexec: bool) -> Result<(), ()> {

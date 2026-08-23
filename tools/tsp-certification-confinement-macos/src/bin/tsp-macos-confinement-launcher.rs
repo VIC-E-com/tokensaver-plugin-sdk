@@ -5,32 +5,35 @@ fn main() {
 
     let arguments = std::env::args_os().collect::<Vec<_>>();
     if arguments.len() < 5 || arguments[1] != "--memory-bytes" || arguments[3] != "--" {
-        std::process::exit(127);
+        fail(117, b"arguments\n");
     }
     let Some(memory) = arguments[2]
         .to_str()
         .and_then(|value| value.parse::<libc::rlim_t>().ok())
         .filter(|value| *value > 0)
     else {
-        std::process::exit(127);
+        fail(118, b"memory\n");
     };
-    if set_limit(libc::RLIMIT_AS, memory).is_err()
-        || set_limit(libc::RLIMIT_DATA, memory).is_err()
-        || set_limit(libc::RLIMIT_NPROC, 1).is_err()
-        || set_limit(libc::RLIMIT_NOFILE, 32).is_err()
-        || set_limit(libc::RLIMIT_CORE, 0).is_err()
-    {
-        std::process::exit(127);
+    for (resource, value, code, stage) in [
+        (libc::RLIMIT_AS, memory, 119, b"rlimit_as\n".as_slice()),
+        (libc::RLIMIT_DATA, memory, 120, b"rlimit_data\n".as_slice()),
+        (libc::RLIMIT_NPROC, 1, 121, b"rlimit_nproc\n".as_slice()),
+        (libc::RLIMIT_NOFILE, 32, 122, b"rlimit_nofile\n".as_slice()),
+        (libc::RLIMIT_CORE, 0, 123, b"rlimit_core\n".as_slice()),
+    ] {
+        if set_limit(resource, value).is_err() {
+            fail(code, stage);
+        }
     }
     let Ok(executable) = CString::new(arguments[4].as_os_str().as_bytes()) else {
-        std::process::exit(127);
+        fail(124, b"executable\n");
     };
     let Ok(argument_values) = arguments[4..]
         .iter()
         .map(|value| CString::new(value.as_os_str().as_bytes()))
         .collect::<Result<Vec<_>, _>>()
     else {
-        std::process::exit(127);
+        fail(125, b"argument_value\n");
     };
     let mut argument_pointers = argument_values
         .iter()
@@ -63,7 +66,16 @@ fn main() {
             environment_pointers.as_ptr(),
         );
     }
-    std::process::exit(127);
+    fail(126, b"execve\n");
+}
+
+#[cfg(target_os = "macos")]
+fn fail(code: i32, stage: &'static [u8]) -> ! {
+    #[cfg(debug_assertions)]
+    unsafe {
+        libc::write(libc::STDERR_FILENO, stage.as_ptr().cast(), stage.len());
+    }
+    std::process::exit(code);
 }
 
 #[cfg(target_os = "macos")]

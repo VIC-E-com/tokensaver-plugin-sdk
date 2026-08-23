@@ -173,7 +173,7 @@ fn diagnose_launch_layers(config: &MacosConfinementConfig) {
             command
         }),
     ];
-    for probe in probes {
+    for probe in &probes {
         eprintln!(
             "macOS native launch probe {}: status={:?}; stdout={:?}; stderr={:?}",
             probe.label,
@@ -181,6 +181,8 @@ fn diagnose_launch_layers(config: &MacosConfinementConfig) {
             String::from_utf8_lossy(&probe.stdout),
             String::from_utf8_lossy(&probe.stderr)
         );
+    }
+    for probe in probes {
         assert!(
             probe.status.success() && probe.stdout == b"probe" && probe.stderr.is_empty(),
             "macOS native launch probe {} failed",

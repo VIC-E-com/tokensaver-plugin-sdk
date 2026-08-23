@@ -1,4 +1,8 @@
-use super::{CgroupLeaf, LinuxKernelError, child::ChildProcess, debug_stage};
+use super::{
+    CgroupLeaf, LinuxKernelError,
+    child::{ChildProcess, setup_stage},
+    debug_stage,
+};
 use crate::linux_driver::{LinuxKernelExecution, LinuxKernelObservation};
 use std::os::fd::{AsRawFd, OwnedFd};
 use std::ptr::null;
@@ -113,7 +117,7 @@ pub(super) fn run(
     drop(cleanup);
     let (peak_memory_bytes, memory_limit_hit) = cgroup.finish()?;
     if let Some(code) = setup_failure {
-        debug_stage("child_setup", Some(i32::from(code)));
+        debug_stage(setup_stage(code), None);
         return Err(LinuxKernelError);
     }
     let termination = if memory_limit_hit {
@@ -443,6 +447,23 @@ mod tests {
         drop(write);
         read_setup_status(&mut status, &mut failed).expect("status eof");
         assert!(status.is_none());
+    }
+
+    #[test]
+    fn setup_status_codes_have_bounded_stage_names() {
+        for code in [
+            10, 11, 12, 13, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+        ] {
+            let stage = setup_stage(code);
+            assert_ne!(stage, "child_setup_unknown");
+            assert!(stage.len() <= 32);
+            assert!(
+                stage
+                    .bytes()
+                    .all(|byte| byte.is_ascii_lowercase() || byte == b'_')
+            );
+        }
+        assert_eq!(setup_stage(0), "child_setup_unknown");
     }
 
     fn pipe_nonblocking() -> (OwnedFd, OwnedFd) {
