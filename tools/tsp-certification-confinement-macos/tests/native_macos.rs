@@ -56,7 +56,13 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
         (6, b"TS_WORK".as_slice()),
     ] {
         let observed = execute(&kernel, &config, ordinal, input, 4096, 2_000);
-        assert_eq!(observed.termination, NativeTermination::Exited(0));
+        assert_eq!(
+            observed.termination,
+            NativeTermination::Exited(0),
+            "native case {ordinal} failed; stdout={:?}; stderr={:?}",
+            String::from_utf8_lossy(&observed.stdout),
+            String::from_utf8_lossy(&observed.stderr)
+        );
         assert_eq!(
             observed.stdout,
             if ordinal == 1 { input } else { b"ok" }.to_vec()

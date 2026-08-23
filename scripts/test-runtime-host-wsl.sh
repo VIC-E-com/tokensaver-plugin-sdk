@@ -5,6 +5,10 @@ set -euo pipefail
 if [[ "${1:-}" == "--runner" ]]; then
   : "${PROOF_CGROUP_ROOT:?}" "${PROOF_USER:?}" "${PROOF_HOME:?}" "${PROOF_TARGET:?}"
   : "${PROOF_SANDBOX:?}" "${PROOF_CARGO:?}" "${PROOF_MANIFEST:?}"
+  proof_cargo_target=()
+  if [[ -n "${PROOF_RUST_TARGET:-}" ]]; then
+    proof_cargo_target=(--target "$PROOF_RUST_TARGET")
+  fi
   printf '%s\n' "$$" > "$PROOF_CGROUP_ROOT/runner/cgroup.procs"
   runuser -u "$PROOF_USER" -- env \
     HOME="$PROOF_HOME" \
@@ -13,6 +17,7 @@ if [[ "${1:-}" == "--runner" ]]; then
     TOKENSAVER_PLUGIN_SANDBOX_ROOT="$PROOF_SANDBOX" \
     TOKENSAVER_PLUGIN_CGROUP_PARENT="$PROOF_CGROUP_ROOT/sandboxes" \
     "$PROOF_CARGO" test --locked \
+      "${proof_cargo_target[@]}" \
       --manifest-path "$PROOF_MANIFEST" \
       -p tokensaver-plugin-runtime-host \
       --test native_runtime -- --ignored --nocapture
@@ -100,6 +105,7 @@ PROOF_SANDBOX="$proof_sandbox" \
 PROOF_CARGO="$cargo_bin" \
 PROOF_MANIFEST="$manifest" \
 PROOF_GO_TEST="$proof_go_test" \
+PROOF_RUST_TARGET="${PROOF_RUST_TARGET:-}" \
   bash "$script_dir/test-runtime-host-wsl.sh" --runner
 
 printf '[runtime-host WSL proof] native confinement passed\n'

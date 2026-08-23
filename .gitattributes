@@ -1,6 +1,14 @@
 * text=auto
 *.sh text eol=lf
 *.ps1 text eol=crlf
+*.go text eol=lf
+*.rs text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
 *.json text eol=lf
 *.md text eol=lf
 Cargo.lock text eol=lf

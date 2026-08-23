@@ -69,6 +69,11 @@ jobs:
         with:
           toolchain: 1.86.0
           components: clippy
+          targets: x86_64-unknown-linux-musl
+      - name: Install static Linux linker
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends musl-tools
       - name: Test Windows confinement adapter
         run: cargo test --locked -p tokensaver-certification-confinement-windows
       - name: Run native Windows confinement proof
@@ -97,7 +102,7 @@ jobs:
           cargo test --locked -p tokensaver-certification-confinement-linux --lib
           cargo clippy --locked -p tokensaver-certification-confinement-linux --all-targets -- -D warnings
       - name: Run native Linux confinement and runtime-host proof
-        run: sudo bash scripts/test-runtime-host-wsl.sh "$USER"
+        run: sudo env PROOF_RUST_TARGET=x86_64-unknown-linux-musl bash scripts/test-runtime-host-wsl.sh "$USER"
 
   native-confinement-macos:
     name: Verify macOS confinement on ${{ matrix.platform }}
