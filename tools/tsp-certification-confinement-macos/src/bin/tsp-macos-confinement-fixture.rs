@@ -21,11 +21,16 @@ fn main() {
                 .expect("fixture stderr");
         }
         b"TS_MEMORY" => {
-            let mut bytes = vec![0u8; 256 * 1024 * 1024];
-            for page in bytes.chunks_mut(4096) {
-                page[0] = 1;
+            let mut retained = Vec::new();
+            loop {
+                let mut bytes = vec![0u8; 8 * 1024 * 1024];
+                for page in bytes.chunks_mut(4096) {
+                    page[0] = 1;
+                }
+                retained.push(bytes);
+                std::hint::black_box(&retained);
+                std::thread::sleep(std::time::Duration::from_millis(1));
             }
-            std::hint::black_box(bytes);
         }
         b"TS_CRASH" => std::process::abort(),
         b"TS_FS" => print_result(
