@@ -186,7 +186,10 @@ jobs:
           targets: ${{ matrix.rust_target }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          # Windows arm64 has no hosted Python 3.10 toolcache entry. Packaging
+          # uses only the standard-library verifier; quality still proves the
+          # public SDK's documented Python 3.10 minimum separately.
+          python-version: '3.13'
       - name: Install static Linux runtime host linker
         if: startsWith(matrix.platform, 'linux-')
         run: |
