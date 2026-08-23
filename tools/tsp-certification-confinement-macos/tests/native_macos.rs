@@ -112,7 +112,7 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
     assert!(crash.process_reaped);
 
     let memory = execute(&kernel, &config, 14, b"TS_MEMORY", 1024, 2_000);
-    assert!(!matches!(memory.termination, NativeTermination::Exited(0)));
+    assert_eq!(memory.termination, NativeTermination::MemoryLimitKilled);
     assert!(memory.peak_memory_bytes <= NATIVE_TEST_MEMORY_BYTES);
     assert!(memory.process_reaped);
 

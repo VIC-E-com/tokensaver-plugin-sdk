@@ -7,32 +7,32 @@ fn main() {
     if arguments.len() < 5 || arguments[1] != "--memory-bytes" || arguments[3] != "--" {
         fail(117, b"arguments\n");
     }
-    let Some(memory) = arguments[2]
+    if arguments[2]
         .to_str()
         .and_then(|value| value.parse::<libc::rlim_t>().ok())
         .filter(|value| *value > 0)
-    else {
+        .is_none()
+    {
         fail(118, b"memory\n");
-    };
+    }
     for (resource, value, code, stage) in [
-        (libc::RLIMIT_RSS, memory, 119, b"rlimit_rss\n".as_slice()),
-        (libc::RLIMIT_NPROC, 1, 120, b"rlimit_nproc\n".as_slice()),
-        (libc::RLIMIT_NOFILE, 32, 121, b"rlimit_nofile\n".as_slice()),
-        (libc::RLIMIT_CORE, 0, 122, b"rlimit_core\n".as_slice()),
+        (libc::RLIMIT_NPROC, 1, 119, b"rlimit_nproc\n".as_slice()),
+        (libc::RLIMIT_NOFILE, 32, 120, b"rlimit_nofile\n".as_slice()),
+        (libc::RLIMIT_CORE, 0, 121, b"rlimit_core\n".as_slice()),
     ] {
         if set_limit(resource, value).is_err() {
             fail(code, stage);
         }
     }
     let Ok(executable) = CString::new(arguments[4].as_os_str().as_bytes()) else {
-        fail(123, b"executable\n");
+        fail(122, b"executable\n");
     };
     let Ok(argument_values) = arguments[4..]
         .iter()
         .map(|value| CString::new(value.as_os_str().as_bytes()))
         .collect::<Result<Vec<_>, _>>()
     else {
-        fail(124, b"argument_value\n");
+        fail(123, b"argument_value\n");
     };
     let mut argument_pointers = argument_values
         .iter()
@@ -65,7 +65,7 @@ fn main() {
             environment_pointers.as_ptr(),
         );
     }
-    fail(125, b"execve\n");
+    fail(124, b"execve\n");
 }
 
 #[cfg(target_os = "macos")]

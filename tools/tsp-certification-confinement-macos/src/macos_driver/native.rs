@@ -12,6 +12,8 @@ use tokensaver_certification_confinement::NativeTermination;
 const SANDBOX_EXEC: &str = "/usr/bin/sandbox-exec";
 const POLL_INTERVAL: Duration = Duration::from_millis(5);
 const REAP_GRACE: Duration = Duration::from_secs(2);
+const MINIMUM_MEMORY_MARGIN: u64 = 4 << 20;
+const MAXIMUM_MEMORY_MARGIN: u64 = 32 << 20;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct MacosKernel;
@@ -70,6 +72,7 @@ impl MacosConfinementKernel for MacosKernel {
             stdout,
             stderr,
             request.input,
+            request.maximum_memory_bytes,
             request.maximum_stdout_bytes,
             request.maximum_stderr_bytes,
             request.deadline,
@@ -144,6 +147,7 @@ fn run_process(
     stdout: impl Read + AsRawFd,
     stderr: impl Read + AsRawFd,
     input: &[u8],
+    memory_limit: u64,
     stdout_limit: usize,
     stderr_limit: usize,
     deadline: Duration,
@@ -155,7 +159,10 @@ fn run_process(
     let started = Instant::now();
     let mut input_offset = 0usize;
     let mut killed_for_deadline = false;
+    let mut killed_for_memory = false;
     let mut killed_for_stream = false;
+    let mut sampled_peak_memory = 0u64;
+    let memory_threshold = memory_kill_threshold(memory_limit);
     let mut status = 0;
     let mut usage: libc::rusage = unsafe { std::mem::zeroed() };
 
@@ -168,11 +175,30 @@ fn run_process(
                 stdin.take();
             }
         }
-        if (stdout.exceeded || stderr.exceeded) && !killed_for_stream {
+        if let Some(memory) = resident_memory_bytes(pid)? {
+            sampled_peak_memory = sampled_peak_memory.max(memory);
+            if memory >= memory_threshold
+                && !killed_for_memory
+                && !killed_for_stream
+                && !killed_for_deadline
+            {
+                kill_group(pid)?;
+                killed_for_memory = true;
+            }
+        }
+        if (stdout.exceeded || stderr.exceeded)
+            && !killed_for_stream
+            && !killed_for_memory
+            && !killed_for_deadline
+        {
             kill_group(pid)?;
             killed_for_stream = true;
         }
-        if started.elapsed() >= deadline && !killed_for_deadline && !killed_for_stream {
+        if started.elapsed() >= deadline
+            && !killed_for_deadline
+            && !killed_for_stream
+            && !killed_for_memory
+        {
             kill_group(pid)?;
             killed_for_deadline = true;
         }
@@ -212,8 +238,11 @@ fn run_process(
         }
     }
     verify_group_empty(pid)?;
-    let peak_memory_bytes = u64::try_from(usage.ru_maxrss).map_err(|_| MacosKernelError)?;
-    let termination = if killed_for_deadline {
+    let wait_peak_memory = u64::try_from(usage.ru_maxrss).map_err(|_| MacosKernelError)?;
+    let peak_memory_bytes = sampled_peak_memory.max(wait_peak_memory);
+    let termination = if killed_for_memory {
+        NativeTermination::MemoryLimitKilled
+    } else if killed_for_deadline {
         NativeTermination::DeadlineKilled
     } else if libc::WIFEXITED(status) {
         NativeTermination::Exited(libc::WEXITSTATUS(status))
@@ -232,6 +261,29 @@ fn run_process(
         stderr_limit_exceeded: stderr.exceeded,
         process_reaped: true,
     })
+}
+
+fn memory_kill_threshold(limit: u64) -> u64 {
+    let margin = (limit / 8).clamp(MINIMUM_MEMORY_MARGIN, MAXIMUM_MEMORY_MARGIN);
+    limit.saturating_sub(margin).max(1)
+}
+
+fn resident_memory_bytes(pid: libc::pid_t) -> Result<Option<u64>, MacosKernelError> {
+    let mut usage: libc::rusage_info_v2 = unsafe { std::mem::zeroed() };
+    let result = unsafe {
+        libc::proc_pid_rusage(
+            pid,
+            libc::RUSAGE_INFO_V2,
+            (&mut usage as *mut libc::rusage_info_v2).cast(),
+        )
+    };
+    if result == 0 {
+        Ok(Some(usage.ri_phys_footprint.max(usage.ri_resident_size)))
+    } else if std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH) {
+        Ok(None)
+    } else {
+        Err(MacosKernelError)
+    }
 }
 
 fn write_input(

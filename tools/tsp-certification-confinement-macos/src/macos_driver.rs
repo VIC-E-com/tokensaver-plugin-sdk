@@ -14,7 +14,7 @@ use tsp_workbench::CertificationFuzzEngine;
 
 const BACKEND_ID: &str = "tokensaver.macos-native";
 const BACKEND_VERSION: &str = "1.0.0";
-const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0sandbox-deny-default+apple-system-base\0trusted-launcher\0process-group\0rlimit-rss+nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
+const POLICY: &[u8] = b"tokensaver-macos-confinement-policy-v1\0sandbox-deny-default+apple-system-base\0trusted-launcher\0process-group\0proc-rusage-memory-watchdog+rlimit-nproc+files\0kill+wait4+group-proof\0bounded-stdio\0minimal-environment";
 const ENV_ALLOWLIST: &[&str] = &[
     "ASAN_OPTIONS",
     "GCOV_PREFIX",
