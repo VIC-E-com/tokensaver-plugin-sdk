@@ -69,7 +69,7 @@ fn shipped_host_rehashes_identity_and_preserves_io_and_arguments_inside_native_c
         "arguments": arguments,
         "input": base64::engine::general_purpose::STANDARD.encode(b"TS_ARGS"),
         "deadlineMilliseconds": 1_250,
-        "maximumMemoryBytes": 128 << 20,
+        "maximumMemoryBytes": 256 << 20,
         "maximumStdoutBytes": 4096,
         "maximumStderrBytes": 4096
     });

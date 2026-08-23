@@ -69,11 +69,6 @@ jobs:
         with:
           toolchain: 1.86.0
           components: clippy
-          targets: x86_64-unknown-linux-musl
-      - name: Install static Linux linker
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends musl-tools
       - name: Test Windows confinement adapter
         run: cargo test --locked -p tokensaver-certification-confinement-windows
       - name: Run native Windows confinement proof
@@ -96,6 +91,11 @@ jobs:
         with:
           toolchain: 1.86.0
           components: clippy
+          targets: x86_64-unknown-linux-musl
+      - name: Install static Linux linker
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends musl-tools
       - name: Test and lint Linux confinement adapter
         run: |
           set -euo pipefail

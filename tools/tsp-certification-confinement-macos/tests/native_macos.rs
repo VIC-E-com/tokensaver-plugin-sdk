@@ -11,6 +11,8 @@ use tokensaver_certification_confinement_macos::{
 };
 use tsp_workbench::CertificationFuzzEngine;
 
+const NATIVE_TEST_MEMORY_BYTES: u64 = 256 << 20;
+
 #[test]
 #[ignore = "requires native macOS sandbox-exec enforcement"]
 fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_controls() {
@@ -108,7 +110,7 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
 
     let memory = execute(&kernel, &config, 14, b"TS_MEMORY", 1024, 2_000);
     assert!(!matches!(memory.termination, NativeTermination::Exited(0)));
-    assert!(memory.peak_memory_bytes <= 128 << 20);
+    assert!(memory.peak_memory_bytes <= NATIVE_TEST_MEMORY_BYTES);
     assert!(memory.process_reaped);
 
     std::thread::scope(|scope| {
@@ -165,7 +167,7 @@ fn execute_with_arguments(
             environment: config.environment(),
             arguments,
             input,
-            maximum_memory_bytes: 128 << 20,
+            maximum_memory_bytes: NATIVE_TEST_MEMORY_BYTES,
             maximum_stdout_bytes: stdout,
             maximum_stderr_bytes: 4096,
             deadline: Duration::from_millis(deadline_ms),
