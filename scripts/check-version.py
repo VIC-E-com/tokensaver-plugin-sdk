@@ -47,14 +47,23 @@ def main() -> None:
     if typescript.get("version") != version:
         fail(f"TypeScript package declares {typescript.get('version')!r}")
 
+    example_plugin_ids: set[str] = set()
     for manifest in sorted((ROOT / "examples").glob("*/plugin.json")):
-        declared = json.loads(manifest.read_text(encoding="utf-8")).get("version")
+        plugin = json.loads(manifest.read_text(encoding="utf-8"))
+        declared = plugin.get("version")
         if declared != version:
             fail(f"{manifest.relative_to(ROOT)} declares {declared!r}")
+        plugin_id = plugin.get("id")
+        if not isinstance(plugin_id, str) or not plugin_id:
+            fail(f"{manifest.relative_to(ROOT)} has no plugin id")
+        example_plugin_ids.add(plugin_id)
 
     workflow = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
     if f"SDK_VERSION: {version}" not in workflow:
         fail("release workflow SDK_VERSION does not match VERSION")
+    for plugin_id in sorted(example_plugin_ids):
+        if plugin_id not in workflow:
+            fail(f"release workflow does not use manifest plugin id {plugin_id!r}")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     if f"## [{version}]" not in changelog:
         fail("CHANGELOG has no current release heading")

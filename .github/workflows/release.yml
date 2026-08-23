@@ -215,7 +215,7 @@ jobs:
           set -euo pipefail
           mkdir -p "examples/ponytails/bin/$PLATFORM" dist
           cp "target/release/$EXECUTABLE" "examples/ponytails/bin/$PLATFORM/$EXECUTABLE"
-          package="com.tokensaver.ponytails-${{ env.SDK_VERSION }}-$PLATFORM.tsplug"
+          package="com.vic-e.tokensaver.ponytails-${{ env.SDK_VERSION }}-$PLATFORM.tsplug"
           cargo run --locked --release -p tsp-workbench -- package examples/ponytails --output "dist/$package" --json > "dist/$package.package-report.json"
       - name: Upload native package evidence
         uses: actions/upload-artifact@v4
@@ -329,7 +329,7 @@ jobs:
           set -euo pipefail
           mkdir -p "examples/deepseek-harness/bin/$PLATFORM" dist
           cp "target/release/$EXECUTABLE" "examples/deepseek-harness/bin/$PLATFORM/$EXECUTABLE"
-          package="com.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-$PLATFORM.tsplug"
+          package="com.vic-e.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-$PLATFORM.tsplug"
           cargo run --locked --release -p tsp-workbench -- package examples/deepseek-harness --output "dist/$package" --json > "dist/$package.package-report.json"
       - name: Upload native package evidence
         uses: actions/upload-artifact@v4
@@ -370,7 +370,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir release
-          cargo run --locked --release -p tsp-workbench -- catalog dist --output release/com.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json --json
+          cargo run --locked --release -p tsp-workbench -- catalog dist --output release/com.vic-e.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json --json
       - name: Upload immutable release set
         uses: actions/upload-artifact@v4
         with:
@@ -378,14 +378,14 @@ jobs:
           path: |
             dist/*.tsplug
             dist/*.tsplug.package-report.json
-            release/com.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json
+            release/com.vic-e.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json
           if-no-files-found: error
           retention-days: 30
       - name: Attest immutable plugin release-set provenance
         if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: release/com.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json
+          subject-path: release/com.vic-e.tokensaver.deepseek-harness-${{ env.SDK_VERSION }}-catalog.json
 
   catalog-ponytails:
     needs: package-ponytails
@@ -411,7 +411,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir release
-          cargo run --locked --release -p tsp-workbench -- catalog dist --output release/com.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json --json
+          cargo run --locked --release -p tsp-workbench -- catalog dist --output release/com.vic-e.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json --json
       - name: Upload immutable release set
         uses: actions/upload-artifact@v4
         with:
@@ -419,14 +419,14 @@ jobs:
           path: |
             dist/*.tsplug
             dist/*.tsplug.package-report.json
-            release/com.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json
+            release/com.vic-e.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json
           if-no-files-found: error
           retention-days: 30
       - name: Attest immutable plugin release-set provenance
         if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: release/com.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json
+          subject-path: release/com.vic-e.tokensaver.ponytails-${{ env.SDK_VERSION }}-catalog.json
 
   runtime-host-release:
     name: Assemble trusted runtime-host release bundle
