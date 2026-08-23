@@ -9,10 +9,11 @@ immutable policy digest. Both executables are rehashed before every operation.
 
 The native backend requires Apple's root-owned `sandbox-exec`, Apple's system runtime sandbox base
 under a TokenSaver deny-by-default profile, a private 0700 evidence directory, immutable
-executables, a dedicated process group, hard data/process/file limits, bounded nonblocking streams,
+executables, a dedicated process group, hard resident-set/process/file limits, bounded nonblocking streams,
 deadline and overflow group termination, `wait4` memory accounting, direct-child reap, and proof
 that the process group is empty. Network and fork operations remain explicitly denied by the
-TokenSaver profile. There is no unconstrained-process fallback.
+TokenSaver profile. The launcher applies Darwin's resident-set, process-count, descriptor, and core
+limits before executing the plugin. There is no unconstrained-process fallback.
 
 The trusted launcher exists because resource limits must be installed after the sandbox is active
 and before the plugin executable starts. CI must build and pin this launcher separately for macOS

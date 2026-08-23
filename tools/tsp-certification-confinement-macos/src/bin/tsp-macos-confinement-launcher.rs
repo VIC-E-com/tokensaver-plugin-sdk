@@ -15,7 +15,7 @@ fn main() {
         fail(118, b"memory\n");
     };
     for (resource, value, code, stage) in [
-        (libc::RLIMIT_DATA, memory, 119, b"rlimit_data\n".as_slice()),
+        (libc::RLIMIT_RSS, memory, 119, b"rlimit_rss\n".as_slice()),
         (libc::RLIMIT_NPROC, 1, 120, b"rlimit_nproc\n".as_slice()),
         (libc::RLIMIT_NOFILE, 32, 121, b"rlimit_nofile\n".as_slice()),
         (libc::RLIMIT_CORE, 0, 122, b"rlimit_core\n".as_slice()),
