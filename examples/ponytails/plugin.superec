@@ -21,7 +21,7 @@
     "createdAt": "2026-08-21T00:00:00Z",
     "generator": {
       "name": "TokenSaver Plugin SDK",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   },
   "workspace": {
@@ -40,15 +40,15 @@
   },
   "resources": [
     {
-      "id": "tokensaver:plugin:com.tokensaver.ponytails",
+      "id": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "kind": "plugin",
       "name": "Ponytails",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "ecosystem": "tokensaver",
       "identifiers": [
         {
           "type": "tokensaver-plugin-id",
-          "value": "com.tokensaver.ponytails"
+          "value": "com.vic-e.tokensaver.ponytails"
         }
       ],
       "attributes": {
@@ -87,7 +87,7 @@
   ],
   "relationships": [
     {
-      "from": "tokensaver:plugin:com.tokensaver.ponytails",
+      "from": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "to": "tokensaver:api:tspp:1",
       "type": "implements",
       "state": "declared",
@@ -102,7 +102,7 @@
     },
     {
       "from": "tokensaver:test-suite:ponytails-golden",
-      "to": "tokensaver:plugin:com.tokensaver.ponytails",
+      "to": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "type": "tests",
       "state": "observed",
       "attributes": {},
@@ -125,6 +125,6 @@
     "algorithm": "sha256",
     "canonicalization": "JCS-RFC8785",
     "scope": "document-without-integrity",
-    "digest": "sha256:b13cfb00058d70b9a9127644edd90bcc75a12a5be3d34dc8d040c844f2e813cd"
+    "digest": "sha256:8ce9a5c9df9843ad6b82b13da7ac507f939f8dd08708a974a2f4d9f029e10dfe"
   }
 }

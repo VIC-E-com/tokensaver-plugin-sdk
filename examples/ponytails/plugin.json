@@ -1,12 +1,12 @@
 {
   "$schema": "https://sdk.tokensaver.app/schemas/plugin-manifest.v1.json",
   "apiVersion": 1,
-  "id": "com.tokensaver.ponytails",
+  "id": "com.vic-e.tokensaver.ponytails",
   "name": "Ponytails",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "creator": {
     "name": "TokenSaver",
-    "url": "https://tokensaver.app"
+    "url": "https://vic-e.com"
   },
   "description": "Smart head-and-tail reference optimizer with error-anchored failure context.",
   "license": "Apache-2.0",

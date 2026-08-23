@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-certification-confinement-linux"
-version = "0.1.0"
+version = "0.1.1"
 description = "Trusted Linux namespace, seccomp, Landlock, and cgroup v2 certification driver"
 edition.workspace = true
 license.workspace = true

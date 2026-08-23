@@ -5,17 +5,17 @@ description: Behavior and verification notes for the TokenSaver community plugin
 tags: [tokensaver, plugin, tspp, deepseek-harness]
 superec_source:
   format: SUPEREC/0.1.0
-  id: tokensaver:plugin:com.tokensaver.deepseek-harness
-  digest: sha256:34acb4a13c9f529c53c36ab753a52022f1864d2c82866006206165862d79504e
+  id: tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness
+  digest: sha256:aeaba4b03b0db4a0f42547fe6aad3a40503a86752173ad8963aaa9b096029c99
 ---
 
 # DeepSeek Harness Output Optimizer
 
-Plugin id: `com.tokensaver.deepseek-harness`.
+Plugin id: `com.vic-e.tokensaver.deepseek-harness`.
 
 TSPP major version: `1`.
 
-Release version: `0.1.0`.
+Release version: `0.1.1`.
 
 This is a community integration by VIC-E. It is not affiliated with or
 endorsed by DeepSeek.

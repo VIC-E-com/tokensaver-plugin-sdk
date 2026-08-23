@@ -10,11 +10,11 @@
       "releaseId": "tsr1_0a3e0fb1f6f4bd985b7edc5316f6197a0469f6cc9828623af628a8f6d765dd40"
     },
     {
-      "pluginId": "com.tokensaver.ponytails",
+      "pluginId": "com.vic-e.tokensaver.ponytails",
       "version": "0.1.0",
       "platform": "windows-x64",
       "artifactDigest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-      "releaseId": "tsr1_b3923967095b3fa81e7f4013a4b689caefed98aedad6bd8dd57b9aafd1e6401d"
+      "releaseId": "tsr1_3c4abcf5a5c5e0fe9d274a1b2e783f560532168dfee6b262c6ebed2dc9b3cb1f"
     }
   ]
 }

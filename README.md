@@ -217,7 +217,7 @@ identical inputs.
 Assemble native packages and their JSON reports into a release catalog:
 
 ```text
-cargo run -p tsp-workbench -- catalog dist --output com.tokensaver.ponytails-0.1.0-catalog.json
+cargo run -p tsp-workbench -- catalog dist --output com.vic-e.tokensaver.ponytails-0.1.1-catalog.json
 ```
 
 Each canonical package must be named `<plugin-id>-<version>-<platform>.tsplug`; its unmodified

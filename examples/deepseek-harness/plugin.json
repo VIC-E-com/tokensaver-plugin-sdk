@@ -1,9 +1,9 @@
 {
   "$schema": "https://sdk.tokensaver.app/schemas/plugin-manifest.v1.json",
   "apiVersion": 1,
-  "id": "com.tokensaver.deepseek-harness",
+  "id": "com.vic-e.tokensaver.deepseek-harness",
   "name": "DeepSeek Harness Output Optimizer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "creator": {
     "name": "VIC-E",
     "url": "https://vic-e.com"

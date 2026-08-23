@@ -1,3 +1,3 @@
 # Concepts: resources/plugin
 
-- ["Ponytails"](/resources/plugin/tokensaver-plugin-com-tokensaver-ponytails.md)
+- ["Ponytails"](/resources/plugin/tokensaver-plugin-com-vic-e-tokensaver-ponytails.md)

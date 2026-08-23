@@ -6,8 +6,8 @@ const TAIL_LINES: usize = 20;
 struct DeepSeekHarnessOptimizer;
 
 impl Optimizer for DeepSeekHarnessOptimizer {
-    const PLUGIN_ID: &'static str = "com.tokensaver.deepseek-harness";
-    const VERSION: &'static str = "0.1.0";
+    const PLUGIN_ID: &'static str = "com.vic-e.tokensaver.deepseek-harness";
+    const VERSION: &'static str = "0.1.1";
 
     fn optimize(&self, request: Request) -> Action {
         if !eligible_request(request.program(), request.text()) {

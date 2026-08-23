@@ -21,7 +21,7 @@
     "createdAt": "2026-08-21T00:00:00Z",
     "generator": {
       "name": "TokenSaver Plugin SDK",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   },
   "workspace": {
@@ -43,7 +43,7 @@
       "id": "tokensaver:system:plugin-sdk",
       "kind": "system",
       "name": "TokenSaver Plugin SDK",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "ecosystem": "tokensaver",
       "identifiers": [
         {
@@ -79,22 +79,22 @@
       "id": "tokensaver:tool:tsp",
       "kind": "toolchain",
       "name": "tsp workbench",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "identifiers": [],
       "attributes": {
         "description": "Scaffold, golden-test, run, and conformance workbench"
       }
     },
     {
-      "id": "tokensaver:plugin:com.tokensaver.ponytails",
+      "id": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "kind": "plugin",
       "name": "Ponytails",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "ecosystem": "tokensaver",
       "identifiers": [
         {
           "type": "tokensaver-plugin-id",
-          "value": "com.tokensaver.ponytails"
+          "value": "com.vic-e.tokensaver.ponytails"
         }
       ],
       "attributes": {
@@ -147,7 +147,7 @@
       ]
     },
     {
-      "from": "tokensaver:plugin:com.tokensaver.ponytails",
+      "from": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "to": "tokensaver:api:tspp:1",
       "type": "implements",
       "state": "declared",
@@ -162,7 +162,7 @@
     },
     {
       "from": "tokensaver:system:plugin-sdk",
-      "to": "tokensaver:plugin:com.tokensaver.ponytails",
+      "to": "tokensaver:plugin:com.vic-e.tokensaver.ponytails",
       "type": "contains",
       "state": "observed",
       "attributes": {},
@@ -180,6 +180,6 @@
     "algorithm": "sha256",
     "canonicalization": "JCS-RFC8785",
     "scope": "document-without-integrity",
-    "digest": "sha256:9e8844279b103910214d147ac2060bcd7c5c5255e8e58944e73111f0b8224357"
+    "digest": "sha256:bb2c6bef376e405d132a5a0df2f54385ead0f162c4487f471a45a45ec05e54a1"
   }
 }

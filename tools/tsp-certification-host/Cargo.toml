@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-certification-host"
-version = "0.1.0"
+version = "0.1.1"
 description = "Host-owned authenticated certification evidence transport"
 edition.workspace = true
 license.workspace = true

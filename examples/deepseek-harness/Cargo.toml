@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-deepseek-harness-plugin"
-version = "0.1.0"
+version = "0.1.1"
 description = "TokenSaver community optimizer for DeepSeek Harness workspace output"
 edition.workspace = true
 license.workspace = true

@@ -24,7 +24,7 @@ fn packaged_ponytails_passes_real_process_conformance() {
     assert_eq!(superec["specVersion"], "0.1.0");
     assert_eq!(
         superec["resources"][0]["identifiers"][0]["value"],
-        "com.tokensaver.ponytails"
+        "com.vic-e.tokensaver.ponytails"
     );
     assert!(include_str!("../wiki/index.md").contains("okf_version: \"0.2\""));
 
@@ -65,8 +65,8 @@ fn packaged_ponytails_passes_real_process_conformance() {
     assert_eq!(report.schema_version, 1);
     assert!(report.ok);
     assert_eq!(report.certification_level.as_u8(), 1);
-    assert_eq!(report.plugin_id, "com.tokensaver.ponytails");
-    assert_eq!(report.version, "0.1.0");
+    assert_eq!(report.plugin_id, "com.vic-e.tokensaver.ponytails");
+    assert_eq!(report.version, "0.1.1");
     assert_eq!(report.release_id, plugin.release_id);
     assert_eq!(report.artifact_digest, plugin.artifact_digest);
     assert_eq!(
@@ -224,7 +224,7 @@ fn packaged_ponytails_passes_real_process_conformance() {
     assert!(package.reproducible);
     assert_eq!(package.schema_version, 1);
     assert_eq!(package.certification_level.as_u8(), 1);
-    assert_eq!(package.plugin_id, "com.tokensaver.ponytails");
+    assert_eq!(package.plugin_id, "com.vic-e.tokensaver.ponytails");
     assert_eq!(package.release_id, plugin.release_id);
     assert!(package.archive_digest.starts_with("sha256:"));
     assert!(
@@ -285,7 +285,7 @@ fn packaged_ponytails_passes_real_process_conformance() {
     let catalog = assemble_package_catalog(&catalog_input, &catalog_path)
         .expect("assemble Ponytails package catalog");
     assert!(catalog.ok);
-    assert_eq!(catalog.plugin_id, "com.tokensaver.ponytails");
+    assert_eq!(catalog.plugin_id, "com.vic-e.tokensaver.ponytails");
     assert_eq!(catalog.package_count, 1);
     assert_eq!(catalog.platforms, [platform_key()]);
     let catalog_bytes = fs::read(&catalog_path).expect("read package catalog");

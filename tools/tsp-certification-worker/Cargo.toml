@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-certification-worker"
-version = "0.1.0"
+version = "0.1.1"
 description = "Trusted TokenSaver certification worker orchestration"
 edition.workspace = true
 license.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-certification-confinement"
-version = "0.1.0"
+version = "0.1.1"
 description = "Trusted native confinement adapter for TokenSaver certification workers"
 edition.workspace = true
 license.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-plugin-runtime-host"
-version = "0.1.0"
+version = "0.1.1"
 description = "Trusted native confinement host for the TokenSaver plugin runtime"
 edition.workspace = true
 license.workspace = true

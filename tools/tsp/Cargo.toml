@@ -1,6 +1,6 @@
 [package]
 name = "tsp-workbench"
-version = "0.1.0"
+version = "0.1.1"
 description = "TokenSaver Plugin SDK workbench and conformance validator"
 edition.workspace = true
 license.workspace = true

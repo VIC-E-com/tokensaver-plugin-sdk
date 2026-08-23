@@ -55,7 +55,10 @@ fn deepseek_harness_plugin_passes_real_process_and_package_contracts() {
     let plugin = load_and_resolve(&directory.0).expect("resolve real executable");
     let validation = validate_plugin(&plugin).expect("validate real process");
     assert!(validation.ok);
-    assert_eq!(validation.plugin_id, "com.tokensaver.deepseek-harness");
+    assert_eq!(
+        validation.plugin_id,
+        "com.vic-e.tokensaver.deepseek-harness"
+    );
     assert_eq!(validation.certification_level.as_u8(), 1);
 
     let input = (0..140)
@@ -110,7 +113,7 @@ fn deepseek_harness_plugin_passes_real_process_and_package_contracts() {
     let package = package_plugin(&plugin, &package_path).expect("package plugin");
     assert!(package.ok);
     assert!(package.reproducible);
-    assert_eq!(package.plugin_id, "com.tokensaver.deepseek-harness");
+    assert_eq!(package.plugin_id, "com.vic-e.tokensaver.deepseek-harness");
     assert!(
         fs::read(package_path)
             .expect("read package")

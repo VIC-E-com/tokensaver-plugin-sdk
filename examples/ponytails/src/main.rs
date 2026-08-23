@@ -3,8 +3,8 @@ use tokensaver_plugin::{Action, Optimizer, Request, run};
 struct Ponytails;
 
 impl Optimizer for Ponytails {
-    const PLUGIN_ID: &'static str = "com.tokensaver.ponytails";
-    const VERSION: &'static str = "0.1.0";
+    const PLUGIN_ID: &'static str = "com.vic-e.tokensaver.ponytails";
+    const VERSION: &'static str = "0.1.1";
 
     fn optimize(&self, request: Request) -> Action {
         optimize_text(request.exit_code(), request.text())
