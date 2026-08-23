@@ -47,11 +47,29 @@ impl LinuxConfinementKernel for LinuxKernel {
             request.cgroup_parent,
             request.attempt_id,
             request.maximum_memory_bytes,
-        )?;
-        let child = child::spawn(request, cgroup.descriptor())?;
-        io::run(child, cgroup, request)
+        )
+        .inspect_err(|_| {
+            debug_stage("cgroup_leaf_create", None);
+        })?;
+        let child = child::spawn(request, cgroup.descriptor()).inspect_err(|_| {
+            debug_stage("child_spawn", None);
+        })?;
+        io::run(child, cgroup, request).inspect_err(|_| {
+            debug_stage("child_io", None);
+        })
     }
 }
+
+#[cfg(debug_assertions)]
+pub(super) fn debug_stage(stage: &str, errno: Option<i32>) {
+    eprintln!(
+        "TokenSaver Linux native diagnostic: stage={stage}; errno={}",
+        errno.map_or_else(|| "none".to_owned(), |value| value.to_string())
+    );
+}
+
+#[cfg(not(debug_assertions))]
+pub(super) fn debug_stage(_: &str, _: Option<i32>) {}
 
 fn verify_namespace_surface() -> Result<(), LinuxKernelError> {
     for namespace in ["user", "mnt", "net", "pid"] {

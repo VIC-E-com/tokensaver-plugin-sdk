@@ -4,7 +4,7 @@ fn main() {
     use std::os::unix::ffi::OsStrExt;
 
     let arguments = std::env::args_os().collect::<Vec<_>>();
-    if arguments.len() != 5 || arguments[1] != "--memory-bytes" || arguments[3] != "--" {
+    if arguments.len() < 5 || arguments[1] != "--memory-bytes" || arguments[3] != "--" {
         std::process::exit(127);
     }
     let Some(memory) = arguments[2]
@@ -25,7 +25,18 @@ fn main() {
     let Ok(executable) = CString::new(arguments[4].as_os_str().as_bytes()) else {
         std::process::exit(127);
     };
-    let argv = [executable.as_ptr(), std::ptr::null()];
+    let Ok(argument_values) = arguments[4..]
+        .iter()
+        .map(|value| CString::new(value.as_os_str().as_bytes()))
+        .collect::<Result<Vec<_>, _>>()
+    else {
+        std::process::exit(127);
+    };
+    let mut argument_pointers = argument_values
+        .iter()
+        .map(|value| value.as_ptr())
+        .collect::<Vec<_>>();
+    argument_pointers.push(std::ptr::null());
     let environment = std::env::vars_os()
         .filter_map(|(name, value)| {
             let mut bytes = name.as_os_str().as_bytes().to_vec();
@@ -48,7 +59,7 @@ fn main() {
     unsafe {
         libc::execve(
             executable.as_ptr(),
-            argv.as_ptr(),
+            argument_pointers.as_ptr(),
             environment_pointers.as_ptr(),
         );
     }

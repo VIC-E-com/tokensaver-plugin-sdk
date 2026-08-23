@@ -1,4 +1,4 @@
-use super::{CgroupLeaf, LinuxKernelError, child::ChildProcess};
+use super::{CgroupLeaf, LinuxKernelError, child::ChildProcess, debug_stage};
 use crate::linux_driver::{LinuxKernelExecution, LinuxKernelObservation};
 use std::os::fd::{AsRawFd, OwnedFd};
 use std::ptr::null;
@@ -36,7 +36,7 @@ pub(super) fn run(
     let mut stdout = Capture::new(child_stdout, request.maximum_stdout_bytes);
     let mut stderr = Capture::new(child_stderr, request.maximum_stderr_bytes);
     let mut status = Some(child_status);
-    let mut setup_failure = false;
+    let mut setup_failure = None;
     let mut exited = false;
     let mut killed_for_deadline = false;
     let mut killed_for_stream = false;
@@ -49,7 +49,7 @@ pub(super) fn run(
         stdout.drain()?;
         stderr.drain()?;
         read_setup_status(&mut status, &mut setup_failure)?;
-        if setup_failure && kill_started.is_none() {
+        if setup_failure.is_some() && kill_started.is_none() {
             kill_complete(pidfd.as_raw_fd(), &cgroup)?;
             kill_started.get_or_insert_with(Instant::now);
         }
@@ -112,7 +112,8 @@ pub(super) fn run(
     cleanup.disarm();
     drop(cleanup);
     let (peak_memory_bytes, memory_limit_hit) = cgroup.finish()?;
-    if setup_failure {
+    if let Some(code) = setup_failure {
+        debug_stage("child_setup", Some(i32::from(code)));
         return Err(LinuxKernelError);
     }
     let termination = if memory_limit_hit {
@@ -272,7 +273,7 @@ fn write_input(
 
 fn read_setup_status(
     status: &mut Option<OwnedFd>,
-    failed: &mut bool,
+    failed: &mut Option<u8>,
 ) -> Result<(), LinuxKernelError> {
     let Some(descriptor) = status else {
         return Ok(());
@@ -285,7 +286,7 @@ fn read_setup_status(
         return Ok(());
     }
     if count == 1 {
-        *failed = true;
+        *failed = Some(byte);
         return Ok(());
     }
     let error = std::io::Error::last_os_error().raw_os_error();
@@ -430,7 +431,7 @@ mod tests {
     fn setup_status_distinguishes_failure_and_exec_close() {
         let (read, write) = pipe_nonblocking();
         let mut status = Some(read);
-        let mut failed = false;
+        let mut failed = None;
         // SAFETY: write is live and code is readable.
         let code = 7u8;
         assert_eq!(
@@ -438,7 +439,7 @@ mod tests {
             1
         );
         read_setup_status(&mut status, &mut failed).expect("status failure");
-        assert!(failed);
+        assert_eq!(failed, Some(code));
         drop(write);
         read_setup_status(&mut status, &mut failed).expect("status eof");
         assert!(status.is_none());

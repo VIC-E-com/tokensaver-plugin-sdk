@@ -1,8 +1,10 @@
 #![cfg(target_os = "macos")]
 
 use std::collections::BTreeMap;
+use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
+use std::process::{Command, ExitStatus, Stdio};
 use std::time::Duration;
 use tokensaver_certification_confinement::NativeTermination;
 use tokensaver_certification_confinement_macos::{
@@ -48,6 +50,7 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
     .expect("configuration");
     let kernel = MacosKernel;
     kernel.preflight(&config).expect("native preflight");
+    diagnose_launch_layers(&config);
 
     for (ordinal, input) in [
         (1, b"macos exact input".as_slice()),
@@ -134,6 +137,83 @@ fn real_kernel_enforces_io_deadline_filesystem_network_process_and_thread_contro
     });
 
     std::fs::remove_dir_all(root).expect("cleanup");
+}
+
+struct LaunchProbe {
+    label: &'static str,
+    status: ExitStatus,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
+}
+
+fn diagnose_launch_layers(config: &MacosConfinementConfig) {
+    let probes = [
+        run_launch_probe("fixture-direct", {
+            let mut command = Command::new(config.executable());
+            configure_probe(&mut command, config);
+            command
+        }),
+        run_launch_probe("launcher-direct", {
+            let mut command = Command::new(config.launcher());
+            command
+                .arg("--memory-bytes")
+                .arg(NATIVE_TEST_MEMORY_BYTES.to_string())
+                .arg("--")
+                .arg(config.executable());
+            configure_probe(&mut command, config);
+            command
+        }),
+        run_launch_probe("sandbox-fixture-direct", {
+            let mut command = Command::new("/usr/bin/sandbox-exec");
+            command
+                .arg("-p")
+                .arg(config.sandbox_profile())
+                .arg(config.executable());
+            configure_probe(&mut command, config);
+            command
+        }),
+    ];
+    for probe in probes {
+        eprintln!(
+            "macOS native launch probe {}: status={:?}; stdout={:?}; stderr={:?}",
+            probe.label,
+            probe.status,
+            String::from_utf8_lossy(&probe.stdout),
+            String::from_utf8_lossy(&probe.stderr)
+        );
+        assert!(
+            probe.status.success() && probe.stdout == b"probe" && probe.stderr.is_empty(),
+            "macOS native launch probe {} failed",
+            probe.label
+        );
+    }
+}
+
+fn configure_probe(command: &mut Command, config: &MacosConfinementConfig) {
+    command
+        .env_clear()
+        .envs(config.environment().iter().cloned())
+        .current_dir(config.writable_directory())
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+}
+
+fn run_launch_probe(label: &'static str, mut command: Command) -> LaunchProbe {
+    let mut child = command.spawn().expect("launch diagnostic probe");
+    child
+        .stdin
+        .take()
+        .expect("probe stdin")
+        .write_all(b"probe")
+        .expect("probe input");
+    let output = child.wait_with_output().expect("probe output");
+    LaunchProbe {
+        label,
+        status: output.status,
+        stdout: output.stdout,
+        stderr: output.stderr,
+    }
 }
 
 fn execute(

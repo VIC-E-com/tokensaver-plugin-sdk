@@ -1,4 +1,4 @@
-use super::{LinuxKernelError, landlock, seccomp};
+use super::{LinuxKernelError, debug_stage, landlock, seccomp};
 use crate::linux_driver::LinuxKernelExecution;
 use std::ffi::{CStr, CString};
 use std::fs;
@@ -119,6 +119,7 @@ pub(super) fn spawn(
         )
     };
     if pid < 0 {
+        debug_stage("clone3", std::io::Error::last_os_error().raw_os_error());
         let _ = fs::remove_dir(&root);
         return Err(LinuxKernelError);
     }
@@ -128,6 +129,7 @@ pub(super) fn spawn(
     }
     let pid = libc::pid_t::try_from(pid).map_err(|_| LinuxKernelError)?;
     if pidfd < 0 {
+        debug_stage("clone3_pidfd", None);
         terminate_and_reap(pid, None);
         return Err(LinuxKernelError);
     }
@@ -139,11 +141,16 @@ pub(super) fn spawn(
     drop(sync.read);
     drop(status.write);
     if configure_identity_maps(pid).is_err() {
+        debug_stage(
+            "identity_maps",
+            std::io::Error::last_os_error().raw_os_error(),
+        );
         terminate_and_reap(pid, Some(pidfd.as_raw_fd()));
         let _ = fs::remove_dir(&root);
         return Err(LinuxKernelError);
     }
     if write_all(sync.write.as_raw_fd(), b"1").is_err() {
+        debug_stage("child_sync", std::io::Error::last_os_error().raw_os_error());
         terminate_and_reap(pid, Some(pidfd.as_raw_fd()));
         let _ = fs::remove_dir(&root);
         return Err(LinuxKernelError);
