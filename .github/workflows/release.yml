@@ -256,13 +256,12 @@ jobs:
               "$PLATFORM" "$host_file" "$host_digest" \
               > "$destination/runtime-host-assets.v1.json"
           fi
-          checksum_files=("$host_file" "runtime-host-assets.v1.json")
-          if [[ "$PLATFORM" == darwin-* ]]; then
-            checksum_files+=("$launcher_file")
-          fi
+          python scripts/verify_runtime_host_assets.py \
+            --directory "$destination" \
+            --platform "$PLATFORM" \
+            --write-checksums
           (
             cd "$destination"
-            sha256sum "${checksum_files[@]}" > SHA256SUMS
             sha256sum --check --strict SHA256SUMS
           )
           python scripts/verify_runtime_host_assets.py --directory "$destination" --platform "$PLATFORM"

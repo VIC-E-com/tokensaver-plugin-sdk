@@ -52,6 +52,38 @@ def require_asset(value: object, filename: str, actual_digest: str) -> None:
         raise VerificationError("asset identity mismatch")
 
 
+def write_checksums(directory: Path, platform: str) -> None:
+    if platform not in PLATFORMS:
+        raise VerificationError("unsupported platform")
+    root = directory.resolve(strict=True)
+    if not root.is_dir():
+        raise VerificationError("artifact directory is invalid")
+    host, launcher = PLATFORMS[platform]
+    payload_names = {host, MANIFEST}
+    if launcher:
+        payload_names.add(launcher)
+    actual_names = {entry.name for entry in root.iterdir()}
+    if actual_names not in (payload_names, payload_names | {CHECKSUMS}):
+        raise VerificationError("artifact membership mismatch before checksum generation")
+    for name in payload_names:
+        entry = root / name
+        if entry.is_symlink() or not entry.is_file():
+            raise VerificationError("artifact member is not a regular file")
+        if entry.stat().st_size <= 0 or entry.stat().st_size > 256 << 20:
+            raise VerificationError("artifact size is invalid")
+    checksum_data = "".join(
+        f"{digest_file(root / name)}  {name}\n" for name in sorted(payload_names)
+    )
+    checksum_path = root / CHECKSUMS
+    temporary = root / f".{CHECKSUMS}.tmp"
+    try:
+        with temporary.open("w", encoding="ascii", newline="\n") as stream:
+            stream.write(checksum_data)
+        temporary.replace(checksum_path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def verify(directory: Path, platform: str) -> None:
     if platform not in PLATFORMS:
         raise VerificationError("unsupported platform")
@@ -116,8 +148,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--directory", required=True, type=Path)
     parser.add_argument("--platform", required=True, choices=sorted(PLATFORMS))
+    parser.add_argument("--write-checksums", action="store_true")
     args = parser.parse_args()
     try:
+        if args.write_checksums:
+            write_checksums(args.directory, args.platform)
         verify(args.directory, args.platform)
     except (OSError, VerificationError) as error:
         print(f"runtime-host asset verification failed: {error}", file=sys.stderr)

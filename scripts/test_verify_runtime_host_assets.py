@@ -6,7 +6,14 @@ import unittest
 import uuid
 from pathlib import Path
 
-from verify_runtime_host_assets import CHECKSUMS, MANIFEST, PLATFORMS, VerificationError, verify
+from verify_runtime_host_assets import (
+    CHECKSUMS,
+    MANIFEST,
+    PLATFORMS,
+    VerificationError,
+    verify,
+    write_checksums,
+)
 
 
 class RuntimeHostAssetVerificationTests(unittest.TestCase):
@@ -40,6 +47,26 @@ class RuntimeHostAssetVerificationTests(unittest.TestCase):
         for platform in PLATFORMS:
             with self.subTest(platform=platform):
                 verify(self.fixture(platform), platform)
+
+    def test_checksum_writer_is_canonical_idempotent_and_rejects_extra_members(self):
+        root = self.fixture("windows-arm64")
+        lines = (root / CHECKSUMS).read_text(encoding="ascii").splitlines()
+        (root / CHECKSUMS).write_text(
+            "".join(f"{line[:64]} *{line[66:]}\n" for line in lines),
+            encoding="ascii",
+        )
+        write_checksums(root, "windows-arm64")
+        first = (root / CHECKSUMS).read_bytes()
+        self.assertTrue(first.endswith(b"\n"))
+        self.assertNotIn(b" *", first)
+        self.assertEqual(first.splitlines(), sorted(first.splitlines()))
+        verify(root, "windows-arm64")
+        write_checksums(root, "windows-arm64")
+        self.assertEqual((root / CHECKSUMS).read_bytes(), first)
+
+        (root / "extra").write_bytes(b"extra")
+        with self.assertRaises(VerificationError):
+            write_checksums(root, "windows-arm64")
 
     def test_rejects_missing_extra_drift_and_manifest_identity(self):
         mutations = {
