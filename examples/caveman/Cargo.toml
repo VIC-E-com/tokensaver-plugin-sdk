@@ -1,0 +1,15 @@
+[package]
+name = "tokensaver-caveman-plugin"
+version = "0.1.1"
+description = "TokenSaver community compatibility optimizer for Caveman output"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+tokensaver-plugin = { path = "../../sdk/rust/tokensaver-plugin" }
+
+[dev-dependencies]
+serde_json.workspace = true
+tsp-workbench = { path = "../../tools/tsp" }

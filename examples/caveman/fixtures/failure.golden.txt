@@ -1,0 +1,46 @@
+caveman failed-run routine event 0 with verbose internal trace details
+caveman failed-run routine event 1 with verbose internal trace details
+caveman failed-run routine event 2 with verbose internal trace details
+caveman failed-run routine event 3 with verbose internal trace details
+caveman failed-run routine event 4 with verbose internal trace details
+caveman failed-run routine event 5 with verbose internal trace details
+caveman failed-run routine event 6 with verbose internal trace details
+caveman failed-run routine event 7 with verbose internal trace details
+caveman failed-run routine event 8 with verbose internal trace details
+caveman failed-run routine event 9 with verbose internal trace details
+... 22 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman failed-run routine event 32 with verbose internal trace details
+caveman failed-run routine event 33 with verbose internal trace details
+caveman failed-run routine event 34 with verbose internal trace details
+ERROR: provider request failed after bounded retries
+caveman failed-run routine event 36 with verbose internal trace details
+caveman failed-run routine event 37 with verbose internal trace details
+caveman failed-run routine event 38 with verbose internal trace details
+... 13 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman failed-run routine event 52 with verbose internal trace details
+caveman failed-run routine event 53 with verbose internal trace details
+caveman failed-run routine event 54 with verbose internal trace details
+next: caveman login --provider anthropic
+caveman failed-run routine event 56 with verbose internal trace details
+caveman failed-run routine event 57 with verbose internal trace details
+caveman failed-run routine event 58 with verbose internal trace details
+caveman failed-run routine event 59 with verbose internal trace details
+billing basis: provider tokens and cache spans
+caveman failed-run routine event 61 with verbose internal trace details
+... 2 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman failed-run routine event 64 with verbose internal trace details
+caveman failed-run routine event 65 with verbose internal trace details
+caveman failed-run routine event 66 with verbose internal trace details
+caveman failed-run routine event 67 with verbose internal trace details
+caveman failed-run routine event 68 with verbose internal trace details
+caveman failed-run routine event 69 with verbose internal trace details
+caveman failed-run routine event 70 with verbose internal trace details
+caveman failed-run routine event 71 with verbose internal trace details
+caveman failed-run routine event 72 with verbose internal trace details
+caveman failed-run routine event 73 with verbose internal trace details
+caveman failed-run routine event 74 with verbose internal trace details
+caveman failed-run routine event 75 with verbose internal trace details
+caveman failed-run routine event 76 with verbose internal trace details
+caveman failed-run routine event 77 with verbose internal trace details
+caveman failed-run routine event 78 with verbose internal trace details
+caveman failed-run routine event 79 with verbose internal trace details

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "Verbose failed Caveman diagnostics",
+  "kind": "log",
+  "program": "caveman",
+  "exitCode": 1,
+  "input": "failure.input.txt",
+  "expectedAction": "optimize",
+  "expectedOutput": "failure.golden.txt"
+}
+

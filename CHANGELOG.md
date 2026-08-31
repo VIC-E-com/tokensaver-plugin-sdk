@@ -2,6 +2,12 @@
 
 All notable changes to the TokenSaver Plugin SDK are documented here.
 
+## [Unreleased]
+
+- Add the Rust Caveman community compatibility optimizer with conservative pass-through gates,
+  bounded streaming diagnostics reduction, deterministic fixtures, real-process verification,
+  and native release packaging for all six supported platform targets.
+
 ## [0.1.1] - 2026-08-23
 
 - Move first-party example plugin IDs under the domain-owned `com.vic-e.tokensaver` namespace.

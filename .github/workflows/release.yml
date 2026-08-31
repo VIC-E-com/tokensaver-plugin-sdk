@@ -278,6 +278,115 @@ jobs:
         with:
           subject-path: runtime-host/${{ matrix.platform }}/*
 
+  package-caveman:
+    name: Package Caveman plugin for ${{ matrix.platform }}
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    needs:
+      - quality
+      - native-confinement-windows
+      - native-confinement-linux
+      - native-confinement-macos
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-x64
+            runner: windows-2025
+            executable: tokensaver-caveman-plugin.exe
+          - platform: windows-arm64
+            runner: windows-11-arm
+            executable: tokensaver-caveman-plugin.exe
+          - platform: linux-x64
+            runner: ubuntu-24.04
+            executable: tokensaver-caveman-plugin
+          - platform: linux-arm64
+            runner: ubuntu-24.04-arm
+            executable: tokensaver-caveman-plugin
+          - platform: darwin-x64
+            runner: macos-15-intel
+            executable: tokensaver-caveman-plugin
+          - platform: darwin-arm64
+            runner: macos-15
+            executable: tokensaver-caveman-plugin
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.86.0
+      - name: Build native Caveman plugin executable
+        run: cargo build --locked --release -p tokensaver-caveman-plugin
+      - name: Package and record native conformance
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          EXECUTABLE: ${{ matrix.executable }}
+        run: |
+          set -euo pipefail
+          mkdir -p "examples/caveman/bin/$PLATFORM" dist
+          cp "target/release/$EXECUTABLE" "examples/caveman/bin/$PLATFORM/$EXECUTABLE"
+          package="com.vic-e.tokensaver.caveman-${{ env.SDK_VERSION }}-$PLATFORM.tsplug"
+          cargo run --locked --release -p tsp-workbench -- package examples/caveman --output "dist/$package" --json > "dist/$package.package-report.json"
+      - name: Upload native package evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: caveman-${{ matrix.platform }}
+          path: |
+            dist/*.tsplug
+            dist/*.tsplug.package-report.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Attest native plugin package provenance
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/*
+
+  catalog-caveman:
+    needs: package-caveman
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.86.0
+      - name: Download native package evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: caveman-*
+          path: dist
+          merge-multiple: true
+      - name: Verify packages and assemble deterministic catalog
+        run: |
+          set -euo pipefail
+          mkdir release
+          cargo run --locked --release -p tsp-workbench -- catalog dist --output release/com.vic-e.tokensaver.caveman-${{ env.SDK_VERSION }}-catalog.json --json
+      - name: Upload immutable release set
+        uses: actions/upload-artifact@v4
+        with:
+          name: caveman-${{ env.SDK_VERSION }}-release
+          path: |
+            dist/*.tsplug
+            dist/*.tsplug.package-report.json
+            release/com.vic-e.tokensaver.caveman-${{ env.SDK_VERSION }}-catalog.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Attest immutable plugin release-set provenance
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: release/com.vic-e.tokensaver.caveman-${{ env.SDK_VERSION }}-catalog.json
+
   package-deepseek-harness:
     name: Package DeepSeek Harness plugin for ${{ matrix.platform }}
     permissions:
@@ -497,6 +606,7 @@ jobs:
     name: Publish GitHub release
     needs:
       - quality
+      - catalog-caveman
       - catalog-deepseek-harness
       - catalog-ponytails
       - runtime-host-release
@@ -516,6 +626,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deepseek-harness-${{ env.SDK_VERSION }}-release
+          path: release-assets/plugins
+      - name: Download Caveman release set
+        uses: actions/download-artifact@v4
+        with:
+          name: caveman-${{ env.SDK_VERSION }}-release
           path: release-assets/plugins
       - name: Download native runtime-host release set
         uses: actions/download-artifact@v4

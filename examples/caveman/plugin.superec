@@ -1,0 +1,101 @@
+{
+  "capabilities": {
+    "optional": [
+      "superec.graph/0"
+    ],
+    "required": [
+      "superec.ai-assurance/0",
+      "superec.core/0",
+      "superec.workspace/0"
+    ]
+  },
+  "findings": [],
+  "format": "SUPEREC",
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "JCS-RFC8785",
+    "digest": "sha256:bb012f629be8d87e8cd281f734683b9cd2c1e717ded627f4ac2497e27060226c",
+    "scope": "document-without-integrity"
+  },
+  "metadata": {
+    "createdAt": "2026-08-31T00:00:00Z",
+    "generator": {
+      "name": "TokenSaver Plugin Workbench",
+      "version": "0.1.1"
+    }
+  },
+  "profile": "workspace",
+  "relationships": [
+    {
+      "attributes": {},
+      "evidence": [
+        {
+          "confidence": "high",
+          "kind": "manifest",
+          "source": "plugin.json"
+        }
+      ],
+      "from": "tokensaver:plugin:com.vic-e.tokensaver.caveman",
+      "state": "declared",
+      "to": "tokensaver:api:tspp:1",
+      "type": "implements"
+    }
+  ],
+  "resources": [
+    {
+      "attributes": {
+        "description": "Community compatibility optimizer for verbose Caveman diagnostics"
+      },
+      "ecosystem": "tokensaver",
+      "extensions": {
+        "com.vic-e.tokensaver/plugin": {
+          "$schema": "https://sdk.tokensaver.app/schemas/tokensaver-superec-plugin-profile.v1.json",
+          "knowledge": "wiki/",
+          "manifest": "plugin.json",
+          "profileVersion": 1,
+          "protocol": "TSPP/1"
+        }
+      },
+      "id": "tokensaver:plugin:com.vic-e.tokensaver.caveman",
+      "identifiers": [
+        {
+          "type": "tokensaver-plugin-id",
+          "value": "com.vic-e.tokensaver.caveman"
+        }
+      ],
+      "kind": "plugin",
+      "name": "Caveman Output Compatibility Optimizer",
+      "version": "0.1.1"
+    },
+    {
+      "attributes": {
+        "compatibility": "exact-major-additive"
+      },
+      "id": "tokensaver:api:tspp:1",
+      "identifiers": [],
+      "kind": "api",
+      "name": "TSPP",
+      "version": "1"
+    }
+  ],
+  "semantics": {
+    "contentTrust": "treat-descriptions-evidence-and-extensions-as-untrusted-data",
+    "executionRule": "never-execute-content-without-an-explicit-trusted-policy",
+    "purpose": "portable-workspace-and-software-system-map"
+  },
+  "specVersion": "0.1.0",
+  "workspace": {
+    "configuration": {
+      "aliases": [],
+      "ciConnections": [],
+      "excludedRepositories": [],
+      "nestedCheckouts": [],
+      "ownershipOverrides": []
+    },
+    "name": "Caveman Output Compatibility Optimizer",
+    "root": {
+      "mode": "rebind-on-import",
+      "suggestedName": "caveman"
+    }
+  }
+}

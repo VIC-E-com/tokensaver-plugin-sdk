@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "name": "Already compacted Caveman recovery output",
+  "kind": "log",
+  "program": "caveman",
+  "exitCode": 0,
+  "input": "already-compacted.input.txt",
+  "expectedAction": "pass"
+}
+

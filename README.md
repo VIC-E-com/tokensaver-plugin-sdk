@@ -399,6 +399,13 @@ real-process validation, deterministic benchmarking and packaging, SUPEREC, OKF,
 same six-platform release and provenance controls as Ponytails. It is a VIC-E community
 integration and is not affiliated with or endorsed by DeepSeek.
 
+`examples/caveman` is a conservative community compatibility optimizer for verbose Caveman
+diagnostics. It leaves Caveman's own compacted and recoverable output byte-for-byte intact,
+preserves failure, remediation, and accounting evidence, and uses bounded linear streaming
+instead of retaining a per-line input index. It ships the same deterministic fixtures,
+real-process tests, six-platform packaging, SUPEREC, OKF, and provenance controls. It is not
+affiliated with or endorsed by Caveman or Julius Brussee.
+
 ## Versioning and extension contract
 
 TSPP `apiVersion` is a major compatibility boundary. V1 readers accept unknown additive JSON

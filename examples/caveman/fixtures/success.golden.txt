@@ -1,0 +1,35 @@
+caveman routine event 0 with verbose internal trace details
+caveman routine event 1 with verbose internal trace details
+caveman routine event 2 with verbose internal trace details
+caveman routine event 3 with verbose internal trace details
+caveman routine event 4 with verbose internal trace details
+caveman routine event 5 with verbose internal trace details
+caveman routine event 6 with verbose internal trace details
+caveman routine event 7 with verbose internal trace details
+caveman routine event 8 with verbose internal trace details
+caveman routine event 9 with verbose internal trace details
+... 19 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman routine event 29 with verbose internal trace details
+WARNING: optional telemetry sink unavailable
+caveman routine event 31 with verbose internal trace details
+... 12 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman routine event 44 with verbose internal trace details
+provider=openai tokens=8420 savings=38% latency=14ms
+caveman routine event 46 with verbose internal trace details
+... 17 routine Caveman diagnostic lines omitted by TokenSaver ...
+caveman routine event 64 with verbose internal trace details
+caveman routine event 65 with verbose internal trace details
+caveman routine event 66 with verbose internal trace details
+caveman routine event 67 with verbose internal trace details
+caveman routine event 68 with verbose internal trace details
+caveman routine event 69 with verbose internal trace details
+caveman routine event 70 with verbose internal trace details
+caveman routine event 71 with verbose internal trace details
+caveman routine event 72 with verbose internal trace details
+caveman routine event 73 with verbose internal trace details
+caveman routine event 74 with verbose internal trace details
+caveman routine event 75 with verbose internal trace details
+caveman routine event 76 with verbose internal trace details
+caveman routine event 77 with verbose internal trace details
+caveman routine event 78 with verbose internal trace details
+caveman routine event 79 with verbose internal trace details

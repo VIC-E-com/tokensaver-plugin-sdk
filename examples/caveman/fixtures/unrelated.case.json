@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "name": "Unrelated verbose command output",
+  "kind": "build",
+  "program": "cargo",
+  "exitCode": 0,
+  "input": "unrelated.input.txt",
+  "expectedAction": "pass"
+}
+
