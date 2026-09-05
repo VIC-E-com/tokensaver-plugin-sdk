@@ -15,7 +15,7 @@ struct CavemanOptimizer;
 
 impl Optimizer for CavemanOptimizer {
     const PLUGIN_ID: &'static str = "com.vic-e.tokensaver.caveman";
-    const VERSION: &'static str = "0.1.1";
+    const VERSION: &'static str = "0.1.3";
 
     fn optimize(&self, request: Request) -> Action {
         if !eligible_request(request.kind(), request.program(), request.text()) {
@@ -349,7 +349,7 @@ mod tests {
             <CavemanOptimizer as Optimizer>::PLUGIN_ID,
             "com.vic-e.tokensaver.caveman"
         );
-        assert_eq!(<CavemanOptimizer as Optimizer>::VERSION, "0.1.1");
+        assert_eq!(<CavemanOptimizer as Optimizer>::VERSION, "0.1.3");
     }
 
     #[test]

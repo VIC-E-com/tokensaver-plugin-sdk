@@ -2,7 +2,11 @@
 
 All notable changes to the TokenSaver Plugin SDK are documented here.
 
-## [Unreleased]
+## [0.1.3] - 2026-09-05
+
+- Ship additive Rust TSPP v2 context-service support and the latest native runtime hosts.
+- Align all release versions before tagging; verify tag/source identity in release CI.
+- Skip unpublished v0.1.2: its tag points to source declaring v0.1.1; preserve that tag history.
 
 - Add the Rust Caveman community compatibility optimizer with conservative pass-through gates,
   bounded streaming diagnostics reduction, deterministic fixtures, real-process verification,

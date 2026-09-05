@@ -66,7 +66,7 @@ fn packaged_ponytails_passes_real_process_conformance() {
     assert!(report.ok);
     assert_eq!(report.certification_level.as_u8(), 1);
     assert_eq!(report.plugin_id, "com.vic-e.tokensaver.ponytails");
-    assert_eq!(report.version, "0.1.1");
+    assert_eq!(report.version, "0.1.3");
     assert_eq!(report.release_id, plugin.release_id);
     assert_eq!(report.artifact_digest, plugin.artifact_digest);
     assert_eq!(

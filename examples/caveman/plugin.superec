@@ -14,14 +14,14 @@
   "integrity": {
     "algorithm": "sha256",
     "canonicalization": "JCS-RFC8785",
-    "digest": "sha256:bb012f629be8d87e8cd281f734683b9cd2c1e717ded627f4ac2497e27060226c",
+    "digest": "sha256:2cfae761441f0aa0b2b188259018c828374fb46af6676a8e1f8ac55b381f596b",
     "scope": "document-without-integrity"
   },
   "metadata": {
     "createdAt": "2026-08-31T00:00:00Z",
     "generator": {
       "name": "TokenSaver Plugin Workbench",
-      "version": "0.1.1"
+      "version": "0.1.3"
     }
   },
   "profile": "workspace",
@@ -65,7 +65,7 @@
       ],
       "kind": "plugin",
       "name": "Caveman Output Compatibility Optimizer",
-      "version": "0.1.1"
+      "version": "0.1.3"
     },
     {
       "attributes": {

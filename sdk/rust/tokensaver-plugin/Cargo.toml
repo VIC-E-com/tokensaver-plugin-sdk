@@ -1,6 +1,6 @@
 [package]
 name = "tokensaver-plugin"
-version = "0.1.1"
+version = "0.1.3"
 description = "Rust SDK for the TokenSaver Plugin Protocol"
 edition.workspace = true
 license.workspace = true

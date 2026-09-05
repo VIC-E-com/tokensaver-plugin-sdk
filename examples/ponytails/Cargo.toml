@@ -1,6 +1,6 @@
 [package]
 name = "ponytails"
-version = "0.1.1"
+version = "0.1.3"
 description = "TokenSaver smart head-and-tail reference optimizer"
 edition.workspace = true
 license.workspace = true

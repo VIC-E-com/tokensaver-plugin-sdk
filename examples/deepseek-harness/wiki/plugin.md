@@ -6,7 +6,7 @@ tags: [tokensaver, plugin, tspp, deepseek-harness]
 superec_source:
   format: SUPEREC/0.1.0
   id: tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness
-  digest: sha256:aeaba4b03b0db4a0f42547fe6aad3a40503a86752173ad8963aaa9b096029c99
+  digest: sha256:0559582dd1396a99f217fd6c78bc637cb6b2424a6999b76c16c15435ad75504c
 ---
 
 # DeepSeek Harness Output Optimizer

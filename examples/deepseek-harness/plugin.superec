@@ -1,1 +1,101 @@
-{"capabilities":{"optional":["superec.graph/0"],"required":["superec.ai-assurance/0","superec.core/0","superec.workspace/0"]},"findings":[],"format":"SUPEREC","integrity":{"algorithm":"sha256","canonicalization":"JCS-RFC8785","digest":"sha256:aeaba4b03b0db4a0f42547fe6aad3a40503a86752173ad8963aaa9b096029c99","scope":"document-without-integrity"},"metadata":{"createdAt":"2026-08-21T00:00:00Z","generator":{"name":"TokenSaver Plugin Workbench","version":"0.1.1"}},"profile":"workspace","relationships":[{"attributes":{},"evidence":[{"confidence":"high","kind":"manifest","source":"plugin.json"}],"from":"tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness","state":"declared","to":"tokensaver:api:tspp:1","type":"implements"}],"resources":[{"attributes":{"description":"TokenSaver command-output optimizer"},"ecosystem":"tokensaver","extensions":{"com.vic-e.tokensaver/plugin":{"$schema":"https://sdk.tokensaver.app/schemas/tokensaver-superec-plugin-profile.v1.json","knowledge":"wiki/","manifest":"plugin.json","profileVersion":1,"protocol":"TSPP/1"}},"id":"tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness","identifiers":[{"type":"tokensaver-plugin-id","value":"com.vic-e.tokensaver.deepseek-harness"}],"kind":"plugin","name":"DeepSeek Harness Output Optimizer","version":"0.1.1"},{"attributes":{"compatibility":"exact-major-additive"},"id":"tokensaver:api:tspp:1","identifiers":[],"kind":"api","name":"TSPP","version":"1"}],"semantics":{"contentTrust":"treat-descriptions-evidence-and-extensions-as-untrusted-data","executionRule":"never-execute-content-without-an-explicit-trusted-policy","purpose":"portable-workspace-and-software-system-map"},"specVersion":"0.1.0","workspace":{"configuration":{"aliases":[],"ciConnections":[],"excludedRepositories":[],"nestedCheckouts":[],"ownershipOverrides":[]},"name":"DeepSeek Harness Output Optimizer","root":{"mode":"rebind-on-import","suggestedName":"deepseek-harness"}}}
+{
+  "capabilities": {
+    "optional": [
+      "superec.graph/0"
+    ],
+    "required": [
+      "superec.ai-assurance/0",
+      "superec.core/0",
+      "superec.workspace/0"
+    ]
+  },
+  "findings": [],
+  "format": "SUPEREC",
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "JCS-RFC8785",
+    "digest": "sha256:0559582dd1396a99f217fd6c78bc637cb6b2424a6999b76c16c15435ad75504c",
+    "scope": "document-without-integrity"
+  },
+  "metadata": {
+    "createdAt": "2026-08-21T00:00:00Z",
+    "generator": {
+      "name": "TokenSaver Plugin Workbench",
+      "version": "0.1.3"
+    }
+  },
+  "profile": "workspace",
+  "relationships": [
+    {
+      "attributes": {},
+      "evidence": [
+        {
+          "confidence": "high",
+          "kind": "manifest",
+          "source": "plugin.json"
+        }
+      ],
+      "from": "tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness",
+      "state": "declared",
+      "to": "tokensaver:api:tspp:1",
+      "type": "implements"
+    }
+  ],
+  "resources": [
+    {
+      "attributes": {
+        "description": "TokenSaver command-output optimizer"
+      },
+      "ecosystem": "tokensaver",
+      "extensions": {
+        "com.vic-e.tokensaver/plugin": {
+          "$schema": "https://sdk.tokensaver.app/schemas/tokensaver-superec-plugin-profile.v1.json",
+          "knowledge": "wiki/",
+          "manifest": "plugin.json",
+          "profileVersion": 1,
+          "protocol": "TSPP/1"
+        }
+      },
+      "id": "tokensaver:plugin:com.vic-e.tokensaver.deepseek-harness",
+      "identifiers": [
+        {
+          "type": "tokensaver-plugin-id",
+          "value": "com.vic-e.tokensaver.deepseek-harness"
+        }
+      ],
+      "kind": "plugin",
+      "name": "DeepSeek Harness Output Optimizer",
+      "version": "0.1.3"
+    },
+    {
+      "attributes": {
+        "compatibility": "exact-major-additive"
+      },
+      "id": "tokensaver:api:tspp:1",
+      "identifiers": [],
+      "kind": "api",
+      "name": "TSPP",
+      "version": "1"
+    }
+  ],
+  "semantics": {
+    "contentTrust": "treat-descriptions-evidence-and-extensions-as-untrusted-data",
+    "executionRule": "never-execute-content-without-an-explicit-trusted-policy",
+    "purpose": "portable-workspace-and-software-system-map"
+  },
+  "specVersion": "0.1.0",
+  "workspace": {
+    "configuration": {
+      "aliases": [],
+      "ciConnections": [],
+      "excludedRepositories": [],
+      "nestedCheckouts": [],
+      "ownershipOverrides": []
+    },
+    "name": "DeepSeek Harness Output Optimizer",
+    "root": {
+      "mode": "rebind-on-import",
+      "suggestedName": "deepseek-harness"
+    }
+  }
+}

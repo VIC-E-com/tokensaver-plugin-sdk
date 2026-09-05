@@ -6,7 +6,7 @@ tags: [tokensaver, plugin, tspp, caveman]
 superec_source:
   format: SUPEREC/0.1.0
   id: tokensaver:plugin:com.vic-e.tokensaver.caveman
-  digest: sha256:bb012f629be8d87e8cd281f734683b9cd2c1e717ded627f4ac2497e27060226c
+  digest: sha256:2cfae761441f0aa0b2b188259018c828374fb46af6676a8e1f8ac55b381f596b
 ---
 
 # Caveman Output Compatibility Optimizer

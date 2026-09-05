@@ -7,7 +7,7 @@ struct DeepSeekHarnessOptimizer;
 
 impl Optimizer for DeepSeekHarnessOptimizer {
     const PLUGIN_ID: &'static str = "com.vic-e.tokensaver.deepseek-harness";
-    const VERSION: &'static str = "0.1.1";
+    const VERSION: &'static str = "0.1.3";
 
     fn optimize(&self, request: Request) -> Action {
         if !eligible_request(request.program(), request.text()) {

@@ -4,7 +4,7 @@ struct Ponytails;
 
 impl Optimizer for Ponytails {
     const PLUGIN_ID: &'static str = "com.vic-e.tokensaver.ponytails";
-    const VERSION: &'static str = "0.1.1";
+    const VERSION: &'static str = "0.1.3";
 
     fn optimize(&self, request: Request) -> Action {
         optimize_text(request.exit_code(), request.text())

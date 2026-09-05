@@ -3,7 +3,7 @@
   "apiVersion": 1,
   "id": "com.vic-e.tokensaver.deepseek-harness",
   "name": "DeepSeek Harness Output Optimizer",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "creator": {
     "name": "VIC-E",
     "url": "https://vic-e.com"
