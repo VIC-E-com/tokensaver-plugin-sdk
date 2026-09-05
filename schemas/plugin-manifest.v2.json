@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdk.tokensaver.app/schemas/plugin-manifest.v2.json",
+  "title": "TokenSaver Context Service Manifest v2",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "id",
+    "name",
+    "version",
+    "creator",
+    "runtime",
+    "profile"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "apiVersion": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?){2,}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+([-+][0-9A-Za-z.-]+)?$"
+    },
+    "creator": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "permissions": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "kind",
+        "entry"
+      ],
+      "properties": {
+        "kind": {
+          "const": "executable"
+        },
+        "entry": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "maxLength": 4096,
+            "pattern": "^[^\\u0000]*$",
+            "$comment": "The host and workbench enforce 4096 UTF-8 bytes, which is stricter than JSON Schema maxLength for non-ASCII text."
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "kinds": {
+          "maxItems": 0,
+          "type": "array"
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        }
+      },
+      "additionalProperties": true
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "timeBudgetMs": {
+          "anyOf": [
+            {
+              "const": 0
+            },
+            {
+              "type": "integer",
+              "minimum": 50,
+              "maximum": 1000
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "digests"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digests": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "profile": {
+      "const": "context-service.v1"
+    }
+  },
+  "additionalProperties": true
+}

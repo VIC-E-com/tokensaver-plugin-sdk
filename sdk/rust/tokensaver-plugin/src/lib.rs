@@ -3,6 +3,9 @@
 //! The SDK deliberately contains protocol plumbing only. Optimization logic
 //! belongs to each plugin and is never part of this crate.
 
+/// Versioned context-service protocol; separate from the v1 optimizer chain.
+pub mod context;
+mod context_json;
 mod model;
 mod protocol;
 

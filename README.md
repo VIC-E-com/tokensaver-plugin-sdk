@@ -4,6 +4,12 @@ This repository is the public `VIC-E-com/tokensaver-plugin-sdk` source. It conta
 Plugin Protocol (TSPP) plumbing and reference tooling. TokenSaver optimization
 heuristics and product secrets do not belong here.
 
+## Context services (Rust, TSPP v2)
+
+The additive `tokensaver_plugin::context` module supports the separately negotiated
+`context-service.v1` profile. See [the v2 contract](wiki/context-service-v2.md).
+Existing optimizer APIs and workbench commands remain TSPP v1.
+
 ## Rust SDK
 
 The Rust SDK handles JSON-RPC framing, the TSPP handshake, base64 conversion,
